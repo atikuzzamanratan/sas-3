@@ -11,7 +11,7 @@ function get_base_url()
 
 $projectName = 'Sustainable Agriculture Statistics';
 $projectDescription= 'Sustainable Agriculture Statistics (SAS) - 2026';
-$projectDescription2= 'টেকসই কৃষি পরিসংখ্যান (এসএএস) ২০২৫';
+$projectDescription2= 'টেকসই কৃষি পরিসংখ্যান (এসএএস) ২০২৬';
 
 $adminUserID = '2';
 
