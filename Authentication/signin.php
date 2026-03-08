@@ -1,0 +1,163 @@
+<?php
+
+use Solvers\Dsql\Application;
+
+$app = new Application();
+
+$baseURL = get_base_url();
+
+if ($_POST['login'] === "login") {
+    $id = $app->cleanInput($_POST['username']);
+    $pass = $app->cleanInput($_POST['pwd']);
+
+    $user = $app->getDBConnection()->fetch('SELECT ui.id, ui.UserName, ui.enc_passw, ui.FullName, ui.CompanyID, dow.CompanyName, ui.MobileNumber, ui.EmailAddress FROM userinfo AS ui JOIN dbo.dataownercompany dow ON ui.CompanyID = dow.id WHERE ui.UserName = ? AND ui.IsActive = 1 AND dow.IsActive = 1', $id);
+
+    if (count($user) > 0) {
+       $isPasswordVerified = password_verify($pass, $user->enc_passw);
+
+        if ($isPasswordVerified) {
+            $_SESSION["Login"] = "True";
+            $_SESSION['UserID'] = $user->id;
+            $_SESSION['User'] = $user->UserName;
+            $_SESSION['FullName'] = $user->FullName;
+            $_SESSION['loggedUserCompanyID'] = $user->CompanyID;
+            $_SESSION['CompanyName'] = $user->CompanyName;
+
+            ReDirect($baseURL . "index.php?parent=home");
+        }
+    }
+    $mgs = "<font color='#FF0000'><p align='center'>Wrong Userid and/or Password.</p></font>";
+}
+?>
+
+<!doctype html>
+<html class="fixed" lang="">
+<head>
+
+    <!-- Basic -->
+    <meta charset="UTF-8">
+
+    <title><?php echo $projectName; ?></title>
+
+    <meta name="keywords" content="Data Collector Solution"/>
+    <meta name="description" content="Solvers Data Collector Solution">
+    <meta name="author" content="solversbd.com">
+
+    <!-- Mobile Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
+    <!-- Web Fonts  -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800|Shadows+Into+Light"
+          rel="stylesheet" type="text/css">
+
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" href="../vendor/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../vendor/animate/animate.compat.css">
+    <link rel="stylesheet" href="../vendor/font-awesome/css/all.min.css"/>
+    <link rel="stylesheet" href="../vendor/boxicons/css/boxicons.min.css"/>
+    <link rel="stylesheet" href="../vendor/magnific-popup/magnific-popup.css"/>
+    <link rel="stylesheet" href="../vendor/bootstrap-datepicker/css/bootstrap-datepicker3.css"/>
+
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="../assets/css/theme.css"/>
+
+    <!-- Skin CSS -->
+    <link rel="stylesheet" href="../assets/css/skins/default.css"/>
+
+    <!-- Theme Custom CSS -->
+    <link rel="stylesheet" href="../assets/css/custom.css">
+
+    <!-- Head Libs -->
+    <script src="../vendor/modernizr/modernizr.js"></script>
+
+</head>
+<!-- <body style="background-image: url('../../img/cps-web-bg.jpg')"> -->
+
+<body style="background-image: url('../../img/sas-login-bg.jpg')">
+
+<!-- start: page -->
+<section class="body-sign">
+    <div class="center-sign">
+        <a href="<?php echo $baseURL; ?>" class="logo float-start" style="padding: 10px">
+            <!-- <img src="../img/cps-logo-web.png" height="70" alt="Solvers"/> -->
+
+            <img src="../img/sas-logo-web.png" height="70" alt="Solvers"/>
+
+        </a>
+
+        <div class="panel card-sign" style="background: #f2f4f4 ; padding-top: 20px">
+            <div class="card-title-sign mt-3 text-end">
+                <h2 class="title text-uppercase font-weight-bold m-0"><i
+                            class="bx bx-user-circle me-1 text-6 position-relative top-5"></i> Sign In</h2>
+            </div>
+            <div class="card-body" style="background: #f2f4f4 ">
+                <form action="../index.php" method="post">
+                    <div class="form-group mb-3">
+                        <label>Username</label>
+                        <div class="input-group">
+                            <input name="username" type="text" class="form-control form-control-lg" required/>
+                            <span class="input-group-text">
+										<i class="bx bx-user text-4"></i>
+									</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <div class="clearfix">
+                            <label class="float-start">Password</label>
+                        </div>
+                        <div class="input-group">
+                            <input name="pwd" type="password" class="form-control form-control-lg" required/>
+                            <span class="input-group-text">
+										<i class="bx bx-lock text-4"></i>
+									</span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <div class="checkbox-custom checkbox-default">
+                                <!--<input id="RememberMe" name="rememberme" type="checkbox"/>
+                                <label for="RememberMe">Remember Me</label>-->
+                            </div>
+                        </div>
+                        <div class="col-sm-4 text-end">
+                            <button type="submit" class="btn btn-primary mt-2" name="login" value="login">Sign In
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+        <p><span style="color:red; font-weight:bold"><?php echo $mgs; ?></span></p>
+
+        <p class="text-center text-muted mt-3 mb-3"><?php include 'Components/footer-credential.php'; ?></p>
+    </div>
+</section>
+<!-- end: page -->
+
+<!-- Vendor -->
+<script src="../vendor/jquery/jquery.js"></script>
+<script src="../vendor/jquery-browser-mobile/jquery.browser.mobile.js"></script>
+<script src="../vendor/popper/umd/popper.min.js"></script>
+<script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="../vendor/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+<script src="../vendor/common/common.js"></script>
+<script src="../vendor/nanoscroller/nanoscroller.js"></script>
+<script src="../vendor/magnific-popup/jquery.magnific-popup.js"></script>
+<script src="../vendor/jquery-placeholder/jquery.placeholder.js"></script>
+
+<!-- Specific Page Vendor -->
+
+<!-- Theme Base, Components and Settings -->
+<script src="../assets/js/theme.js"></script>
+
+<!-- Theme Custom -->
+<script src="../assets/js/custom.js"></script>
+
+<!-- Theme Initialization Files -->
+<script src="../assets/js/theme.init.js"></script>
+
+</body>
+</html>

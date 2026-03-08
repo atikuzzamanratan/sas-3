@@ -1,0 +1,46 @@
+{
+  "name": "solvers/dsql",
+  "type": "project",
+  "description": "Solvers BD data collector web application",
+  "autoload": {
+    "psr-4": {
+      "Solvers\\Dsql\\": "app/",
+      "Solvers\\Ratan\\": "ratan/"
+    },
+    "files": [
+      "app/helpers.php"
+    ]
+  },
+  "authors": [
+    {
+      "name": "solversbd",
+      "homepage": "http://www.solversbd.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=7.4",
+    "vlucas/phpdotenv": "^5.5",
+    "monolog/monolog": "^2.9",
+    "nette/database": "^3.1",
+    "guzzlehttp/guzzle": "^7.7",
+    "phpauth/phpauth": "^1.5",
+    "nette/utils": "^3.2",
+    "ezyang/htmlpurifier": "^4.16",
+    "shieldon/shieldon": "^2.1",
+    "nette/di": "^3.1",
+    "nette/neon": "^3.3",
+    "nette/security": "^3.1"
+  },
+  "require-dev": {
+    "fakerphp/faker": "^1.23",
+    "mockery/mockery": "^1.6",
+    "doctrine/orm": "^2.16",
+    "phpunit/phpunit": "^9.6"
+  },
+  "config": {
+    "platform": {
+      "php": "7.4"
+    }
+  }
+}

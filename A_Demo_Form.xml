@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>A Demo Form</h:title>
+    <model>
+      <instance>
+        <camera id="camera" version="201802192244">
+          <formhub>
+            <uuid/>
+          </formhub>
+          <a/>
+          <b/>
+          <c/>
+          <d/>
+          <e/>
+          <f/>
+          <g/>
+          <h/>
+          <i/>
+          <j/>
+          <k/>
+          <meta>
+            <instanceID/>
+          </meta>
+        </camera>
+      </instance>
+      <bind nodeset="/camera/a" type="binary"/>
+      <bind nodeset="/camera/b" type="binary"/>
+      <bind nodeset="/camera/c" type="binary"/>
+      <bind nodeset="/camera/d" type="binary"/>
+      <bind nodeset="/camera/e" type="binary"/>
+      <bind nodeset="/camera/f" type="binary"/>
+      <bind nodeset="/camera/g" type="binary"/>
+      <bind nodeset="/camera/h" type="binary"/>
+      <bind nodeset="/camera/i" type="binary"/>
+      <bind nodeset="/camera/j" type="binary"/>
+      <bind nodeset="/camera/k" type="binary"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/camera/meta/instanceID" readonly="true()" type="string"/>
+      <bind calculate="'1d0b22a3e4414bca95d3e89e914066da'" nodeset="/camera/formhub/uuid" type="string"/>
+    </model>
+  </h:head>
+  <h:body>
+    <upload mediatype="image/*" ref="/camera/a">
+      <label>Upload image</label>
+    </upload>
+    <upload appearance="new" mediatype="image/*" ref="/camera/b">
+      <label>Take photo (any camera)</label>
+    </upload>
+    <upload appearance="new-front" mediatype="image/*" ref="/camera/c">
+      <label>Take selfie</label>
+    </upload>
+    <upload appearance="new-rear" mediatype="image/*" ref="/camera/d">
+      <label>Take picture with rear camera</label>
+    </upload>
+    <upload appearance="new-rear annotate" mediatype="image/*" ref="/camera/e">
+      <label>Take picture with rear camera and annotate it</label>
+    </upload>
+    <upload mediatype="audio/*" ref="/camera/f">
+      <label>Upload audio</label>
+    </upload>
+    <upload appearance="new" mediatype="audio/*" ref="/camera/g">
+      <label>Record Audio</label>
+    </upload>
+    <upload mediatype="video/*" ref="/camera/h">
+      <label>Upload video</label>
+    </upload>
+    <upload appearance="new" mediatype="video/*" ref="/camera/i">
+      <label>Record video with any camera</label>
+    </upload>
+    <upload appearance="new-front" mediatype="video/*" ref="/camera/j">
+      <label>Record video with front camera</label>
+    </upload>
+    <upload appearance="new-rear" mediatype="video/*" ref="/camera/k">
+      <label>Record video with rear camera</label>
+    </upload>
+  </h:body>
+</h:html>

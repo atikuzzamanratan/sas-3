@@ -1,0 +1,19 @@
+1. install git into the server.
+2. install microsoft powershell into the server.
+3. run the below command into power shell
+   
+   ssh-keygen -t rsa -b 4096 -C "Solvers Server"
+
+ a key pair public key/private key will generate into the folder: 
+   "C:\Users\Administrator\.ssh" folder
+
+
+4. Now take the public key "id_rsa.pub" file and add it into the https://bitbucket.org/
+
+5. Now run the below command into the git bash: 
+
+   git clone https://mdriadhossain@bitbucket.org/mdriadhossain/newdatacollector.git
+
+6. for update the new git commit into the folder is:
+
+   git pull

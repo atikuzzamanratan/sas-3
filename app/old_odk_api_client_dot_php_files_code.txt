@@ -1,0 +1,200 @@
+namespace Solvers\Dsql;
+
+use Dotenv\Dotenv;
+
+class ODKAPIClient
+{
+	private $serverURL = "https://nmsbbs.com/v1/";
+	private $token = "";
+	
+	public $errorMessage = "";
+	public $httpcode;
+	public $result;
+	
+	public function __construct($email, $password) {
+		Dotenv::createImmutable(__DIR__)->load();
+		
+		$password = str_pad($password, 10, "0", STR_PAD_RIGHT);
+		$this->getMyToken($email, $password);
+		
+		if ($this->token == '') {
+			$this->getMyToken(env('ODK_DEFAULT_USERNAME'), env('ODK_DEFAULT_PASSWORD'));
+		
+			if ($this->token == '') {
+				return $this;
+			}
+			
+			//Create this User
+			$user = explode("@", $email);
+			$this->postDataToServer("users", array("email" => $email, "password" => $password, "displayName" => $user[0]));
+			if ($this->errorMessage != "") {
+				$this->token = "";
+				return $this;
+			} else {
+				$this->postDataToServer("projects/".env('ODK_PROJECT_ID')."/assignments/5/".$this->result['id']); //8 for Data Collector Role, 5 for Project Manager
+				$this->getMyToken($email, $password);
+			}
+		}
+
+		return $this;
+	}
+	
+	private function getMyToken($email, $password) {
+		$endPoint = "sessions";
+
+		$ch = curl_init();
+		
+		curl_setopt($ch, CURLOPT_URL, $this->serverURL . $endPoint);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+		curl_setopt($ch, CURLOPT_POST, true);
+		
+		$payload = json_encode((object)array("email"=> $email, "password" => $password));
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+		
+		
+		$result = json_decode(curl_exec($ch), true);
+		$this->httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+		curl_close($ch);
+		
+		if ($this->httpcode != '200') {
+			$this->errorMessage = $result['message'];
+			$this->token = "";
+		} else {
+			$this->errorMessage = "";
+			$this->token = "Authorization: Bearer ".$result['token'];
+		}
+	}
+	
+	public function postDataToServer($endPoint, $paramsAry = array()) {
+		$ch = curl_init();
+		
+		curl_setopt($ch, CURLOPT_URL, $this->serverURL . $endPoint);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', $this->token));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+		curl_setopt($ch, CURLOPT_POST, true);
+		
+		if (count($paramsAry) > 0) {
+			$payload = json_encode((object)$paramsAry);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+		}
+		
+		$result = json_decode(curl_exec($ch), true);
+		$this->httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+		curl_close($ch);
+		
+		if ($this->httpcode != '200') {
+			$this->errorMessage = $result['message'];
+			return $this;
+		}
+		
+		$this->errorMessage = "";
+		$this->result = $result;
+
+		return $this;
+	}
+	
+	public function postXMLToServer($endPoint, $xml) {
+		$xmlContent = $xml->asXML();
+		
+		$ch = curl_init();
+		
+		curl_setopt($ch, CURLOPT_URL, $this->serverURL . $endPoint);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlContent);
+		
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml', $this->token));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HEADER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, true);
+		curl_setopt($ch, CURLOPT_POST, true);
+		
+		$result = json_decode(curl_exec($ch), true);
+		$this->httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		
+		curl_close($ch);
+		
+		if ($this->httpcode != '200') {
+			$this->errorMessage = $result;
+			return $this;
+		}
+		
+		$this->errorMessage = "";
+		$this->result = $result;
+
+		return $this;
+	}
+	
+	public function getDataFromServer($endPoint, $type = "Array", $xmlFormId = "", $redirected = false) {
+		$ch = curl_init();
+		
+		curl_setopt($ch, CURLOPT_URL, $this->serverURL . $endPoint);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', $this->token));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+		
+		if ($redirected) {
+			$result = curl_exec($ch);
+			curl_close($ch);
+			
+			$baseUrl = env('APP_URL');
+			
+			$ary = explode("&return_url=", $result);
+			$redirect = substr($ary[0], 22);
+			$redirect .= "&return_url=".$baseUrl."webhookURLs/editTrigger.php/$xmlFormId/".substr($ary[1], -36);
+
+			echo "<script>window.location.href='".$redirect."'</script>";
+			
+			exit;
+		} else {
+			if ($type == "Array") {
+				$result = json_decode(curl_exec($ch), true);
+			} else {
+				$result = curl_exec($ch);
+			}
+		}
+		
+		$this->httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+		curl_close($ch);
+		
+		if ($this->httpcode != '200') {
+			$this->errorMessage = $result['message'];
+			return $this;
+		}
+		
+		$this->errorMessage = "";
+		$this->result = $result;
+
+		return $this;
+	}
+	
+	public function deleteDataFromServer($endPoint){
+		$ch = curl_init();
+		
+		curl_setopt($ch, CURLOPT_URL, $this->serverURL . $endPoint);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', $this->token));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+		
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE"); 
+		
+		$result = curl_exec($ch);
+		$this->httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		curl_close($ch);
+		
+		if ($this->httpcode != '200') {
+			$this->errorMessage = $result['message'];
+			return $this;
+		}
+		
+		$this->errorMessage = "";
+		$this->result = $result;
+
+		return $this;
+	}
+}

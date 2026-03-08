@@ -1,0 +1,646 @@
+<?php
+// $qryFormName = "SELECT id, FormName FROM datacollectionform WHERE Status = 'Active' AND id = 2 AND CompanyID = ? ORDER BY id ASC";
+$qryFormName = "SELECT id, FormName FROM datacollectionform WHERE Status = 'Active' AND CompanyID = ? ORDER BY id ASC";
+$rsQryFormName = $app->getDBConnection()->fetchAll($qryFormName, $loggedUserCompanyID);
+
+if (strpos($loggedUserName, 'dist') !== false) {
+    $divQuery = "SELECT DISTINCT p.DivisionName, p.DivisionCode FROM PSUList AS p 
+    JOIN assignsupervisor AS a ON p.PSUUserID = a.UserID 
+    WHERE  p.CompanyID = ? AND a.DistCoordinatorID = ?";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID, $loggedUserID);
+} else {
+    $divQuery = "SELECT DISTINCT DivisionName , DivisionCode FROM PSUList WHERE CompanyID = ? ORDER BY DivisionName ASC";
+    $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID);
+}
+
+$qryColName = "SELECT ColumnName, ColumnLabel FROM xformcolumnname WHERE FormId = $formIdMainData AND ChoiceListName<>'' AND ColumnName NOT LIKE'B_%'";
+
+if ((isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') || (isset($_REQUEST['FormID']) && $_REQUEST['FormID'] !== '')) {
+    $FormID 	   = xss_clean($_REQUEST['FormID']);
+
+    $moduleName1   = xss_clean($_REQUEST['moduleName1']);
+	$gender1       = xss_clean($_REQUEST['gender1']);
+	$ColumnName1   = xss_clean($_REQUEST['columnName1']);
+    $Operator1 	   = xss_clean($_REQUEST['operator1']);
+    $ColumnOption1 = xss_clean($_REQUEST['columnOption1']);
+    $AndOr1 	   = xss_clean($_REQUEST['andor1']);
+
+    $moduleName2   = xss_clean($_REQUEST['moduleName2']);
+	$gender2       = xss_clean($_REQUEST['gender2']);
+	$ColumnName2   = xss_clean($_REQUEST['columnName2']);
+    $Operator2     = xss_clean($_REQUEST['operator2']);
+    $ColumnOption2 = xss_clean($_REQUEST['columnOption2']);
+    $AndOr2 	   = xss_clean($_REQUEST['andor2']);
+
+    $moduleName3   = xss_clean($_REQUEST['moduleName3']);
+	$gender3       = xss_clean($_REQUEST['gender3']);
+	$ColumnName3   = xss_clean($_REQUEST['columnName3']);
+    $Operator3     = xss_clean($_REQUEST['operator3']);
+    $ColumnOption3 = xss_clean($_REQUEST['columnOption3']);
+
+    $DataStatus    = xss_clean($_REQUEST['DataStatus']);
+    $DivisionCode  = xss_clean($_REQUEST['DivisionCode']);
+    $DistrictCode  = xss_clean($_REQUEST['DistrictCode']);
+    $UpazilaCode   = xss_clean($_REQUEST['UpazilaCode']);
+    $UnionWardCode = xss_clean($_REQUEST['UnionWardCode']);
+    $MauzaCode     = xss_clean($_REQUEST['MauzaCode']);
+    $VillageCode   = xss_clean($_REQUEST['VillageCode']);
+
+} else {
+	$FormID 	   = 2;
+}
+?>
+
+<div class="inner-wrapper">
+    <section role="main" class="content-body">
+        <header class="page-header">
+            <h2><?php echo $MenuLebel; ?></h2>
+
+            <?php include_once 'Components/header-home-button.php'; ?>
+        </header>
+
+        <!-- start: page -->
+        <div class="row">
+            <div class="col-lg-12 mb-0">
+                <section class="card">
+                    <div class="card-body">
+                        <form class="form-horizontal form-bordered" action="" method="post" onsubmit="handleFormSubmit(event)">
+                            <div class="form-group row pb-3">
+                                <label class="col-lg-2 control-label text-sm-end pt-2">Form Select<span
+                                        class="required">*</span></label>
+                                <div class="col-lg-9">
+                                    <select data-plugin-selectTwo class="form-control populate" name="FormID"
+                                        id="FormID" title="Please select a form" 
+										onchange="getModuleName()"
+										required>
+                                        <optgroup label="Choose a Form">
+                                            <?PHP
+                                            foreach ($rsQryFormName as $row) {
+                                                echo '<option value="' . $row->id . '"' . (isset($FormID) && !empty($FormID) && $row->id == $FormID ? ' selected' : '') . '>' . $row->FormName . '</option>';
+                                            }
+                                            ?>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row pb-3">
+								<div class="col-lg-2">
+                                    <select data-plugin-selectTwo class="form-control populate moduleNames" name="moduleName1"
+                                        id="moduleName1" required
+										onchange="getSelectedColumnName('moduleName1', 'columnName1', 'gender1')">
+										<option value="">Select Module</option>
+                                    </select>
+                                </div>
+								
+								<div class="col-lg-2">
+                                    <select data-plugin-selectTwo id="gender1" name="gender1"
+											onchange="getSelectedColumnName('moduleName1', 'columnName1', 'gender1')"
+                                            class="form-control populate">
+                                        <option value="">Choose Gender</option>
+                                        <option value="1" <?php echo isset($gender1) && $gender1 == '1' ? 'selected' : ''; ?>>Male</option>
+                                        <option value="2" <?php echo isset($gender1) && $gender1 == '2' ? 'selected' : ''; ?>>Female</option>
+                                    </select>
+                                </div>
+								
+                                <div class="col-lg-3">
+                                    <select data-plugin-selectTwo class="form-control populate" name="columnName1"
+                                        id="columnName1" title="Please select a column" required
+                                        onchange="getColumnOption1(document.getElementById('FormID').value, document.getElementById('columnName1').value)">
+                                        <option value="">Choose a column</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-1">
+                                    <select data-plugin-selectTwo class="form-control populate" name="operator1"
+                                        id="operator1">
+                                        <option value="equal" <?php echo isset($Operator1) && $Operator1 == 'equal' ? 'selected' : ''; ?>>EQUAL</option>
+                                        <option value="not_equal" <?php echo isset($Operator1) && $Operator1 == 'not_equal' ? 'selected' : ''; ?>>NOT EQUAL</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2">
+                                    <select data-plugin-selectTwo class="form-control populate" name="columnOption1"
+                                        id="columnOption1" title="Please select a column">
+                                    </select>
+                                </div>
+                                <div class="col-lg-1">
+                                    <select data-plugin-selectTwo class="form-control populate" name="andor1"
+                                        id="andor1">
+                                        <option value="OR" <?php echo isset($AndOr1) && $AndOr1 == 'OR' ? 'selected' : ''; ?>>OR</option>
+                                        <option value="AND" <?php echo isset($AndOr1) && $AndOr1 == 'AND' ? 'selected' : ''; ?>>AND</option>
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row pb-3">
+                                <div class="col-lg-2">
+                                    <select data-plugin-selectTwo class="form-control populate moduleNames" name="moduleName2"
+                                        id="moduleName2" required
+										onchange="getSelectedColumnName('moduleName2', 'columnName2', 'gender2')">
+										<option value="">Select Module</option>
+                                    </select>
+                                </div>
+								
+								<div class="col-lg-2">
+                                    <select data-plugin-selectTwo id="gender2" name="gender2"
+											onchange="getSelectedColumnName('moduleName2', 'columnName2', 'gender2')"
+                                            class="form-control populate">
+                                        <option value="">Choose Gender</option>
+                                        <option value="1" <?php echo isset($gender2) && $gender2 == '1' ? 'selected' : ''; ?>>Male</option>
+                                        <option value="2" <?php echo isset($gender2) && $gender2 == '2' ? 'selected' : ''; ?>>Female</option>
+                                    </select>
+                                </div>
+								
+                                <div class="col-lg-3">
+                                    <select data-plugin-selectTwo class="form-control populate" name="columnName2"
+                                        id="columnName2" title="Please select a column" required
+                                        onchange="getColumnOption2(document.getElementById('FormID').value, document.getElementById('columnName2').value)">
+                                        <option value="">Choose a column</option>
+                                        
+                                    </select>
+                                </div>
+                                <div class="col-lg-1">
+                                    <select data-plugin-selectTwo class="form-control populate" name="operator2"
+                                        id="operator2">
+                                        <option value="equal" <?php echo isset($Operator2) && $Operator2 == 'equal' ? 'selected' : ''; ?>>EQUAL</option>
+                                        <option value="not_equal" <?php echo isset($Operator2) && $Operator2 == 'not_equal' ? 'selected' : ''; ?>>NOT EQUAL</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2">
+                                    <select data-plugin-selectTwo class="form-control populate" name="columnOption2"
+                                        id="columnOption2" title="Please select a column">
+                                    </select>
+                                </div>
+                                <div class="col-lg-1">
+                                    <select data-plugin-selectTwo class="form-control populate" name="andor2"
+                                        id="andor2">
+                                        <option value="OR" <?php echo isset($AndOr2) && $AndOr2 == 'OR' ? 'selected' : ''; ?>>OR</option>
+                                        <option value="AND" <?php echo isset($AndOr2) && $AndOr2 == 'AND' ? 'selected' : ''; ?>>AND</option>
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row pb-3">
+                                <div class="col-lg-2">
+                                    <select data-plugin-selectTwo class="form-control populate moduleNames" name="moduleName3"
+                                        id="moduleName3"
+										onchange="getSelectedColumnName('moduleName3', 'columnName3', 'gender3')">
+										<option value="">Select Module</option>
+                                    </select>
+                                </div>
+								
+								<div class="col-lg-2">
+                                    <select data-plugin-selectTwo id="gender3" name="gender3"
+											onchange="getSelectedColumnName('moduleName3', 'columnName3', 'gender3')"
+                                            class="form-control populate">
+                                        <option value="">Choose Gender</option>
+                                        <option value="1" <?php echo isset($gender3) && $gender3 == '1' ? 'selected' : ''; ?>>Male</option>
+                                        <option value="2" <?php echo isset($gender3) && $gender3 == '2' ? 'selected' : ''; ?>>Female</option>
+                                    </select>
+                                </div>
+								
+                                <div class="col-lg-3">
+                                    <select data-plugin-selectTwo class="form-control populate" name="columnName3"
+                                        id="columnName3" title="Please select a column"
+                                        onchange="getColumnOption3(document.getElementById('FormID').value, document.getElementById('columnName3').value)">
+                                        <option value="">Choose a column</option>
+                                        
+                                    </select>
+                                </div>
+                                <div class="col-lg-1">
+                                    <select data-plugin-selectTwo class="form-control populate" name="operator3"
+                                        id="operator3">
+                                        <option value="equal" <?php echo isset($Operator3) && $Operator3 == 'equal' ? 'selected' : ''; ?>>EQUAL</option>
+                                        <option value="not_equal" <?php echo isset($Operator3) && $Operator3 == 'not_equal' ? 'selected' : ''; ?>>NOT EQUAL</option>
+                                    </select>
+                                </div>
+                                <div class="col-lg-2">
+                                    <select data-plugin-selectTwo class="form-control populate" name="columnOption3"
+                                        id="columnOption3" title="Please select a column">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row pb-3">
+                                <label class="col-lg-2 control-label text-sm-end pt-2">Data Status Select<span
+                                        class="required">*</span></label>
+                                <div class="col-lg-9">
+                                    <select data-plugin-selectTwo class="form-control populate" name="DataStatus"
+                                        id="DataStatus" required>
+                                        <optgroup label="Select Data Status">
+                                            <option value="1" <?php echo isset($DataStatus) && $DataStatus == '1' ? 'selected' : ''; ?>>Approved</option>
+                                            <option value="0" <?php echo isset($DataStatus) && $DataStatus == '0' ? 'selected' : ''; ?>>Pending</option>
+                                            <option value="2" <?php echo isset($DataStatus) && $DataStatus == '2' ? 'selected' : ''; ?>>Un-approved</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group row pb-3">
+                                <label class="col-lg-2 control-label text-sm-end pt-2">Division Select
+                                    <span class="required">*</span>
+                                </label>
+                                <div class="col-lg-9">
+                                    <select data-plugin-selectTwo class="form-control populate" name="DivisionCode"
+                                        id="DivisionCode" required
+                                        onchange="ShowDropDown('DivisionCode', 'DistrictDiv', 'ShowDistrict', 'ShowUpazila')">
+                                        <option value="">Choose division</option>
+                                        <?PHP
+                                        foreach ($rsDivQuery as $row) {
+                                            echo '<option value="' . $row->DivisionCode . '"' . (isset($DivisionCode) && !empty($DivisionCode) && $row->DivisionCode == $DivisionCode ? ' selected' : '') . '>' . $row->DivisionName . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="geoDiv" style="display: none">
+                                <div class="form-group row pb-3" id="DistrictDiv"></div>
+                                <div class="form-group row pb-3" id="UpazilaDiv"></div>
+                                <div class="form-group row pb-3" id="UnionWardDiv"></div>
+                                <div class="form-group row pb-3" id="MauzaDiv"></div>
+                                <div class="form-group row pb-3" id="VillageDiv"></div>
+                            </div>
+
+                            <footer class="card-footer">
+                                <div class="row justify-content-end">
+                                    <div class="col-lg-10">
+                                        <input class="btn btn-primary" name="show" type="submit" id="show"
+                                            value="Show">
+
+                                        <button type="button" class="btn btn-secondary ms-4" id="clearForm">Clear</button>
+                                    </div>
+                                </div>
+                            </footer>
+                        </form>
+                    </div>
+
+                    <script type="text/javascript">
+						function getModuleName() {
+							var formID = $("#FormID").find(":selected").val();
+								
+							$.ajax({
+								url: "Reports/get-module-name-list-question-type-by-gender.php",
+								method: "POST",
+								datatype: "html",
+								data: {
+									formID: formID,
+									questionType: 'straight'
+								},
+								success: function(response) {
+									//alert(response);
+									$('.moduleNames').html(response);
+									$("#moduleName1").val('<?=$moduleName1;?>').trigger("change");
+									$("#moduleName2").val('<?=$moduleName2;?>');
+									$("#moduleName3").val('<?=$moduleName3;?>');
+								}
+							});
+							return false;
+						}
+					</script>
+					<script type="text/javascript">
+						function getSelectedColumnName(moduleName, columnName, gender) {
+							var formID = $("#FormID").find(":selected").val(),
+								gender = $("#"+gender).find(":selected").val(),
+								moduleName = $("#"+moduleName).find(":selected").val()
+								column = $("#"+columnName);
+							
+							$.ajax({
+								url: "ViewData/get-column-name-list-by-module-name.php",
+								method: "POST",
+								datatype: "html",
+								data: {
+									formID: formID,
+									gender: gender,
+									moduleName: moduleName
+								},
+								success: function (response) {
+									//alert(response);
+									column.html(response);
+									if (columnName=='columnName1') {
+										$("#columnName1").val('<?=$ColumnName1?>').trigger("change");
+										$("#moduleName2").trigger("change");
+									} else if (columnName=='columnName2') {
+										$("#columnName2").val('<?=$ColumnName2?>').trigger("change");
+										$("#moduleName3").trigger("change");
+									} else if (columnName=='columnName3') {
+										$("#columnName3").val('<?=$ColumnName3?>').trigger("change");
+									}
+								}
+							});
+							return false;
+						}
+					</script>
+                </section>
+                <?php
+                if ($_REQUEST['show'] === 'Show' || (isset($_REQUEST['FormID']) && $_REQUEST['FormID'] !== '')) {
+                    
+                    $FormID = xss_clean($_REQUEST['FormID']);
+                    $FormName = getValue('datacollectionform', 'FormName', "id = $FormID");
+
+                    $DataStatus = xss_clean($_REQUEST['DataStatus']);
+
+                    //First Column Param
+                    $ColName1 = xss_clean($_REQUEST['columnName1']);
+                    $ColNameLabel1 = strip_tags(getValue('xformcolumnname', 'ColumnLabel', "FormId = $FormID AND ColumnName = '$ColName1'"));
+                    $ColOperator1 = xss_clean($_REQUEST['operator1']);
+                    if ($ColOperator1 === "equal") {
+                        $ColOperator1 = '=';
+                    } else {
+                        $ColOperator1 = '<>';
+                    }
+
+                    $QryToFilterColumnValue = " WHERE (";
+
+                    $ColOption1 = xss_clean($_REQUEST['columnOption1']);
+
+                    if ($ColName1 != '' && $ColOperator1 != '' && $ColOption1 != '') {
+                        $QryToFilterColumnValue .= "Column1 $ColOperator1 $ColOption1";
+                    }
+
+                    //Second Column Param
+                    $ColAndOr1 = xss_clean($_REQUEST['andor1']);
+                    $ColName2 = xss_clean($_REQUEST['columnName2']);
+                    $ColNameLabel2 = strip_tags(getValue('xformcolumnname', 'ColumnLabel', "FormId = $FormID AND ColumnName = '$ColName2'"));
+                    $ColOperator2 = xss_clean($_REQUEST['operator2']);
+                    if ($ColOperator2 === "equal") {
+                        $ColOperator2 = '=';
+                    } else {
+                        $ColOperator2 = '<>';
+                    }
+                    $ColOption2 = xss_clean($_REQUEST['columnOption2']);
+
+                    if ($ColAndOr1 != '' && $ColName2 != '' && $ColOperator2 != '' && $ColOption2 != '') {
+                        $QryToFilterColumnValue .= " $ColAndOr1 Column2 $ColOperator2 $ColOption2";
+                    }
+
+                    //Third Column Param
+                    $ColAndOr2 = xss_clean($_REQUEST['andor2']);
+                    $ColName3 = xss_clean($_REQUEST['columnName3']);
+
+                    if ($ColName1 === $ColName3 || $ColName2 === $ColName3) {
+                        $ColName3 = '';
+                    }
+
+                    if (empty($ColName3)) {
+                        $ColNameLabel3 = 'Indicator';
+                    } else {
+                        $ColNameLabel3 = strip_tags(getValue('xformcolumnname', 'ColumnLabel', "FormId = $FormID AND ColumnName = '$ColName3'"));
+                    }
+                    //echo $ColNameLabel3;
+                    $ColOperator3 = xss_clean($_REQUEST['operator3']);
+                    if ($ColOperator3 === "equal") {
+                        $ColOperator3 = '=';
+                    } else {
+                        $ColOperator3 = '<>';
+                    }
+                    $ColOption3 = xss_clean($_REQUEST['columnOption3']);
+
+                    if ($ColAndOr2 != '' && $ColName3 != '' && $ColOperator3 != '' && $ColOption3 != '') {
+                        $QryToFilterColumnValue .= " $ColAndOr2 Column3 $ColOperator3 $ColOption3";
+                    }
+
+                    $QryToFilterColumnValue .= ")";
+
+                    //Geolocation filter
+                    if (!empty($DivisionCode)) {
+                        $DivisionName = getValue('PSUList', 'DivisionName', "DivisionCode = $DivisionCode");
+                    }
+
+                    if (!empty($DistrictCode)) {
+                        $DistrictName = getValue('PSUList', 'DISTINCT(DistrictName)', "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode");
+                        $DistrictName = ' > ' . $DistrictName;
+                    }
+
+                    if (!empty($UpazilaCode)) {
+                        $UpazilaName = getValue(
+                            'PSUList',
+                            'DISTINCT(UpazilaName)',
+                            "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode"
+                        );
+                        $UpazilaName = ' > ' . $UpazilaName;
+                    }
+
+                    if (!empty($UnionWardCode)) {
+                        $UnionWardName = getValue(
+                            'PSUList',
+                            'DISTINCT(UnionWardName)',
+                            "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode"
+                        );
+                        $UnionWardName = ' > ' . $UnionWardName;
+                    }
+
+                    if (!empty($MauzaCode)) {
+                        $MauzaName = getValue(
+                            'PSUList',
+                            'DISTINCT(MauzaName)',
+                            "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode AND MauzaCode = $MauzaCode"
+                        );
+                        $MauzaName = ' > ' . $MauzaName;
+                    }
+
+                    if (!empty($VillageCode)) {
+                        $VillageName = getValue(
+                            'PSUList',
+                            'DISTINCT(VillageName)',
+                            "DivisionCode = $DivisionCode AND DistrictCode = $DistrictCode AND UpazilaCode = $UpazilaCode AND UnionWardCode = $UnionWardCode AND MauzaCode = $MauzaCode AND VillageCode = $VillageCode"
+                        );
+                        $VillageName = ' > ' . $VillageName;
+                    }
+
+                    if (!empty($DivisionCode)) {
+                        $qryCreate = " AND UserID IN (SELECT PSUUserID FROM PSUList WHERE DivisionCode = $DivisionCode";
+                        if (!empty($DistrictCode)) {
+                            $qryCreate .= " AND DistrictCode = $DistrictCode";
+                        }
+                        if (!empty($UpazilaCode)) {
+                            $qryCreate .= " AND UpazilaCode = $UpazilaCode";
+                        }
+                        if (!empty($UnionWardCode)) {
+                            $qryCreate .= " AND UnionWardCode = $UnionWardCode";
+                        }
+                        if (!empty($MauzaCode)) {
+                            $qryCreate .= " AND MauzaCode = $MauzaCode";
+                        }
+                        if (!empty($VillageCode)) {
+                            $qryCreate .= " AND VillageCode = $VillageCode";
+                        }
+                        $qryCreate .= ")";
+                    }
+
+                    $QryToFilterColumnValue .= $qryCreate;
+
+
+                    $CreateTempTable = "EXEC spReport_MasterDataReport_Pivot_For_DataValidation $FormID, $DataStatus, $DivisionCode, '$ColName1', '$ColName2', '$ColName3', '$QryToFilterColumnValue'";
+
+                    /*$rsTempTable = $app->getDBConnection()->fetchAll($CreateTempTable);
+
+                    echo '<br>';
+
+                    foreach ($rsTempTable as $row) {
+                        $Col1 = $row->Column1;
+                        $Col2 = $row->Column2;
+                        $Col3 = $row->Column3;
+
+                        echo "|$Col1, $Col2, $Col3 | ";
+                    }
+
+                    exit();*/
+
+                    //$dataURL = $baseURL . 'ViewData/ajax-data/data-validation-ajax-data.php?sql=' . $CreateTempTable;
+                    $dataURL = $baseURL . "ViewData/ajax-data/data-validation-ajax-data.php?lui=$loggedUserID&lci=$loggedUserCompanyID&frmID=$FormID&dataStatus=$DataStatus&colName1=$ColName1&colName2=$ColName2&colName3=$ColName3&sql=$CreateTempTable";
+
+                ?>
+                    <section class="card">
+                        <div class="card-header">
+                            <div class="card-title">Data Validation : <?php echo $FormName; ?></div>
+                            <div class="card-subtitle"><?php echo $DivisionName . $DistrictName . $UpazilaName . $UnionWardName . $MauzaName . $VillageName; ?></div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered table-striped" id="datatable-ajax"
+                                data-url="<?php echo $dataURL; ?>">
+                                <thead>
+                                    <tr>
+                                        <th>Record ID</th>
+                                        <th>User</th>
+                                        <th>Mobile No</th>
+                                        <th><?php echo $ColNameLabel1 ?></th>
+                                        <th><?php echo $ColNameLabel2 ?></th>
+                                        <th><?php echo $ColNameLabel3 ?></th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                <?php
+                }
+                ?>
+            </div>
+        </div>
+        <!-- end: page -->
+    </section>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#FormID").val('<?=$FormID?>').trigger( "change" );
+	});
+
+    function handleFormSubmit(event) {
+        event.preventDefault();
+        let columnName1 = $('#columnName1').val();
+        let columnName2 = $('#columnName2').val();
+
+        if(columnName1 == columnName2) {
+            alert('First and Second Column Name Can not be same');
+            return false;
+        } else {
+            event.target.submit();
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function getColumnOption1(formID, colName, colOption = '') {
+        
+        $.ajax({
+            url: "ViewData/get-column-option-list.php",
+            method: "GET",
+            datatype: "html",
+            data: {
+                formID: formID,
+                colName: colName,
+                colOption: colOption
+            },
+            success: function(response) {
+                //alert(response);
+                $('#columnOption1').html(response);
+				$('#columnOption1').val('<?=$ColumnOption1?>');
+            }
+        });
+        return false;
+    }
+</script>
+
+<script type="text/javascript">
+    function getColumnOption2(formID, colName, colOption = '') {
+        $.ajax({
+            url: "ViewData/get-column-option-list.php",
+            method: "GET",
+            datatype: "html",
+            data: {
+                formID: formID,
+                colName: colName,
+                colOption: colOption
+            },
+            success: function(response) {
+                //alert(response);
+                $('#columnOption2').html(response);
+				$('#columnOption2').val('<?=$ColumnOption2?>');
+            }
+        });
+        return false;
+    }
+</script>
+
+<script type="text/javascript">
+    function getColumnOption3(formID, colName, colOption = '') {
+        $.ajax({
+            url: "ViewData/get-column-option-list.php",
+            method: "GET",
+            datatype: "html",
+            data: {
+                formID: formID,
+                colName: colName,
+                colOption: colOption
+            },
+            success: function(response) {
+                //alert(response);
+                $('#columnOption3').html(response);
+				$('#columnOption3').val('<?=$ColumnOption3?>');
+            }
+        });
+        return false;
+    }
+</script>
+
+<script type="text/javascript">
+    function SendNotification(senderID, toID, message, companyID, data) {
+        if (confirm("Are you sure to send this message?")) {
+            $.ajax({
+                url: "ViewData/send-notification.php",
+                method: "GET",
+                datatype: "json",
+                data: {
+                    senderID: senderID,
+                    toID: toID,
+                    message: message,
+                    companyID: companyID
+                },
+                success: function(response) {
+                    alert(response);
+                    window.location.reload();
+                }
+            });
+        }
+        return false;
+    }
+</script>
+
+<script>
+    $(document).ready(function() {
+        // Initial population on page load
+        populateDropdowns(
+            <?php echo isset($DivisionCode) && $DivisionCode !== '' ? $DivisionCode : 'null'; ?>,
+            <?php echo isset($DistrictCode) && $DistrictCode !== '' ? $DistrictCode : 'null'; ?>,
+            <?php echo isset($UpazilaCode) && $UpazilaCode !== '' ? $UpazilaCode : 'null'; ?>,
+            <?php echo isset($UnionWardCode) && $UnionWardCode !== '' ? $UnionWardCode : 'null'; ?>,
+            <?php echo isset($MauzaCode) && $MauzaCode !== '' ? $MauzaCode : 'null'; ?>,
+            <?php echo isset($VillageCode) && $VillageCode !== '' ? $VillageCode : 'null'; ?>
+        );
+    });
+</script>

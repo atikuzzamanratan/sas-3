@@ -1,0 +1,144 @@
+error_reporting(E_ALL);
+set_time_limit(0);
+
+require '../vendor/autoload.php';
+include "../Config/config.php";
+include "../Lib/lib.php";
+
+use Solvers\Dsql\Application;
+use Solvers\Dsql\ODKAPIClient;
+
+$app = new Application();
+
+function getInstanceID(){
+	//8a5680dc-d30a-4d89-a953-9fdc43415538
+	$id = generateRandomString(8);
+	$id .= "-".generateRandomString(4);
+	$id .= "-".generateRandomString(4);
+	$id .= "-".generateRandomString(4);
+	$id .= "-".generateRandomString(12);
+	
+	return $id;
+}
+
+function generateRandomString($length = 10) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[random_int(0, $charactersLength - 1)];
+    }
+
+    return $randomString;
+}
+
+$xFormId = $_GET['xFormId'];
+
+$userId = getValue("xformrecord", "UserID", "id=$xFormId");
+$userName = getValue("userinfo", "UserName", "id=$userId");
+$formId = getValue("xformrecord", "FormId", "id=$xFormId");
+$companyId = getValue("xformrecord", "CompanyId", "id=$xFormId");
+$xmlFormId = getValue("datacollectionform", "ODKFormID", "id=$formId");
+
+//Form submission
+$sql = "SELECT xg.GroupName, 
+			COALESCE(xgp.GroupName, '-') AS ParentGroupName,
+			xfrg.ColumnName AS DataName, 
+			COALESCE(un.ColumnValue, '') AS ColumnValue
+		FROM xformcolumnname xfrg
+			JOIN masterdatarecord_UnApproved un ON xfrg.ColumnName = un.ColumnName AND xfrg.FormId=un.FormId AND un.XFormRecordId = $xFormId 
+			JOIN xformGroupName xg ON xfrg.GroupId  = xg.id
+			LEFT JOIN xformGroupName xgp ON xg.parent_id = xgp.id
+		WHERE xfrg.FormId = $formId 
+			AND xfrg.Companyid = $companyId
+		ORDER BY xg.id";
+$xfrs = $app->getDBConnection()->fetchAll($sql);
+
+if (count($xfrs) > 0) {
+	$odkClient = new ODKAPIClient($userName."@gmail.com", $userName);
+	if (!empty($odkClient->errorMessage)) {
+		echo "Error to Create User";
+		exit;
+	}
+	
+	$odkClient->getDataFromServer("projects/".env('ODK_PROJECT_ID')."/forms/$xmlFormId", "Array");
+	$version = $odkClient->result['version'];
+	
+	$xmlString = "<?xml version='1.0' encoding='UTF-8' ?>
+					<data 
+						id=\"$xmlFormId\" 
+						version=\"$version\" 
+						xFormRecordId=\"$xFormId\" 
+						xmlns:ev=\"http://www.w3.org/2001/xml-events\" 
+						xmlns:orx=\"http://openrosa.org/xforms\" 
+						xmlns:odk=\"http://www.opendatakit.org/xforms\" 
+						xmlns:h=\"http://www.w3.org/1999/xhtml\" 
+						xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" 
+						xmlns:jr=\"http://openrosa.org/javarosa\">";
+	
+	
+	$modName 	   = "";
+	$parentModName = "";
+	foreach ($xfrs as $xfr) {
+		$groupName 		 = $xfr->GroupName;
+		$parentGroupName = $xfr->ParentGroupName;
+		$columnName 	 = $xfr->DataName;
+		$columnValue 	 = $xfr->ColumnValue;
+		
+		if ($parentGroupName == "-" && $parentModName != "") {
+			$xmlString .= "</$modName></$parentModName>";
+			$parentModName = "";
+			$modName = "";
+		}
+		
+		if ($modName == "") {
+			$xmlString .= "<$groupName>";
+			$modName = $groupName;
+		}
+		if ($modName != "" && $modName != $groupName) {
+			$xmlString .= "</$modName>";
+			if ($parentGroupName != "-" && $parentModName == "") {
+				$xmlString .= "<$parentGroupName>";
+				$parentModName = $parentGroupName;
+			}
+			if ($parentGroupName != "-" && $parentModName != $parentGroupName) {
+				$xmlString .= "</$parentModName>";
+				$xmlString .= "<$parentGroupName>";
+				$parentModName = $parentGroupName;
+			}
+			$xmlString .= "<$groupName>";
+			$modName = $groupName;
+		}
+		$xmlString .= "<$columnName>".htmlspecialchars($columnValue)."</$columnName>";  //. PHP_EOL. PHP_EOL
+	}
+	$xmlString .= "</$groupName>";
+	if ($parentGroupName != "-" && $parentModName != "") {
+		$xmlString .= "</$pagentModName>";
+	}
+	
+	$instanceID = getInstanceID();
+	
+	$xmlString .= "<meta><instanceID>uuid:".$instanceID."</instanceID></meta></data>";
+
+	/*
+	$xmlfile = fopen("xml.txt", "w") or die("Unable to create Submit Result file!");
+	fwrite($xmlfile, $xmlString);
+	fclose($xmlfile);
+	
+	echo $xmlString;exit;	
+	*/
+
+
+	$odkClient->postXMLToServer("projects/".env('ODK_PROJECT_ID')."/forms/$xmlFormId/submissions", simplexml_load_string($xmlString));
+	if ($odkClient->httpcode != "200") {
+		echo $xmlString;
+	} else {
+		$odkClient->getDataFromServer("projects/".env('ODK_PROJECT_ID')."/forms/$xmlFormId/submissions/uuid:$instanceID/edit", "", $xmlFormId, true);
+	}
+} else {
+	echo "Sorry!!! Your Record ID was not found under Un-Approved Section";
+}
+
+exit;
+
