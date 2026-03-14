@@ -21,7 +21,7 @@
                         <div>
                             <!--<b style="font-size: 17px; line-height: 2"><?php /*echo $projectDescription; */?></b>
                             <p style="font-size: 17px; line-height: 2"><?php /*echo $projectDescription2; */?></p>-->
-                            <b style="font-size: 19px; line-height: 2">কৃষি শ্রম একক প্রতি উৎপাদন ও উৎপাদকের গড় আয় নিরুপণ জরিপ-২০২৬</b>
+                            <b style="font-size: 19px; line-height: 2">জমির মালিকানা এবং নিরাপদ দখলিস্বত্ব নিরূপণ জরিপ-২০২৬</b>
                             <p style="font-size: 18px; line-height: 2; color: #0a0a0a;">টেকসই কৃষি পরিসংখ্যান প্রকল্প (৩য় জরিপ)</p>
                         </div>
                     </div>
