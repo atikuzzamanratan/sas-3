@@ -50,10 +50,12 @@ Thumbs.db
 
 web.config
 /app/.env
+/app/debug.log
 /assets/*/*
 /vendor/
 /SendForms/*/*
 /GetForms/
+/Uploads/
 /EditForms/*/*
 /AppsAPI/CurrentFormVersion.txt
 webhookURLs/generated.xml
