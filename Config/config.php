@@ -35,7 +35,8 @@ $formTypeFarm = 'Farm';
 $supervisorNamePrefix = 'cs';
 $testSupervisorLastDBId = 839;
 
-$testingUserIDs = "(68, 69)";
+//$testingUserIDs = "(68, 69)";
+$testingUserIDs = "(0)";
 
 $columnNameToUpdateValueForMainData = 'A_02';
 $columnNameToUpdateValueForListingData = 'SampleHHNo';

@@ -108,6 +108,7 @@ if ($_REQUEST['show'] === "Show") {
     (SELECT COUNT(id) FROM xformrecord WHERE xformrecord.PSU = PSUList.PSU and xformrecord.UserID=userinfo.id AND xformrecord.FormId = ?) as Collected 
     FROM PSUList JOIN userinfo ON PSUList.PSUUserID = userinfo.id WHERE PSUList.PSUUserID = ? AND PSUList.FarmName <> ''";
     }
+    //echo $QueryDataCollectionStatus;
     $QueryDataCollectionStatusRS = $app->getDBConnection()->fetchAll($QueryDataCollectionStatus, $FormID, $UserID);
 
     $DataSendingDateQuery = " SELECT CONVERT(date, EntryDate) AS DataDate, COUNT(*) AS Number FROM xformrecord WHERE UserID= ? AND FormId = ? GROUP BY CONVERT(date, EntryDate) ORDER BY DataDate DESC";

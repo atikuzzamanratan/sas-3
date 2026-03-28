@@ -465,7 +465,7 @@ if($_REQUEST['show'] === 'Show'){
             $result_TotalSupervisorOnlineQry = $app->getDBConnection()->fetch($TotalSupervisorOnlineQry, $loggedUserCompanyID, 1);
             $TotalSupervisorOnline = $result_TotalSupervisorOnlineQry->SupervisorOnline;
 
-            $TopSenderQuery = "SELECT top 10 xfr.UserID, ui.UserName, COUNT(*) AS Number FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id WHERE xfr.CompanyId = ?  AND xfr.FormId = ? AND ui.id NOT IN(68, 69)";
+            $TopSenderQuery = "SELECT top 10 xfr.UserID, ui.UserName, COUNT(*) AS Number FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id WHERE xfr.CompanyId = ?  AND xfr.FormId = ? AND ui.id NOT IN $testingUserIDs";
             $TopSenderQuery .= $qryCreate;
             $TopSenderQuery .= " GROUP BY xfr.UserID,ui.UserName";
             //$TopSenderQuery .= " HAVING COUNT(*)<49";
@@ -517,7 +517,7 @@ if($_REQUEST['show'] === 'Show'){
                             ) pl ON xfr.UserID = pl.PSUUserID
                             WHERE xfr.CompanyId = ?
                               AND xfr.FormId = ?
-                              AND ui.id NOT IN (68, 69)
+                              AND ui.id NOT IN $testingUserIDs
                             GROUP BY 
                                 xfr.UserID,
                                 ui.UserName,
