@@ -1,5 +1,5 @@
 <?php
-$qryFormName = "SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? ORDER BY id ASC";
+$qryFormName = "SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus' ORDER BY id ASC";
 $rsQryFormName = $app->getDBConnection()->fetchAll($qryFormName, $loggedUserCompanyID);
 ?>
 

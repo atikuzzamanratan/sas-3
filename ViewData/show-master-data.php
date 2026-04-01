@@ -34,7 +34,7 @@ if ($_REQUEST['show'] === 'Show') {
                                         onchange="getColumnName(document.getElementById('SelectedFormID').value)">
                                         <option value="">Choose Form</option>
                                             <?PHP
-                                            $qryForm = $app->getDBConnection()->query("SELECT id, FormName FROM datacollectionform WHERE Status = 'Active' AND CompanyID = ?", $loggedUserCompanyID);
+                                            $qryForm = $app->getDBConnection()->query("SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus'", $loggedUserCompanyID);
 
                                             foreach ($qryForm as $row) {
                                                 echo '<option value="' . $row->id . '"' . (isset($SelectedFormID) && !empty($SelectedFormID) && $row->id == $SelectedFormID ? ' selected' : '') . '>' . $row->FormName . '</option>';

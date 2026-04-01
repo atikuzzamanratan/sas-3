@@ -47,6 +47,8 @@ $formIdSamplingData = 2;
 $formIdMainData = 3;
 $formIdFarmData = 4;
 
+$formActiveStatus = 'Active';
+
 $maxNumberOfHHForSampling = 20;
 $maxNumberOfHHForListing = 165;
 

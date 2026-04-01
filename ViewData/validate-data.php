@@ -8,7 +8,7 @@ function getModifiedColOption($DataType, $ColOption) {
     return in_array($DataType, ['integer', 'select_multiple', 'select_one']) ? $ColOption : "''$ColOption''";
 }
 
-$qryFormName = "SELECT id, FormName FROM datacollectionform WHERE Status = 'Active' AND CompanyID = ? ORDER BY id ASC";
+$qryFormName = "SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus' ORDER BY id ASC";
 $rsQryFormName = $app->getDBConnection()->fetchAll($qryFormName, $loggedUserCompanyID);
 
 if (strpos($loggedUserName, 'dist') !== false) {

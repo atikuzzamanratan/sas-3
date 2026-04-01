@@ -31,7 +31,7 @@ if($_REQUEST['show'] === 'Show'){
                                             class="form-control populate" required>
                                         <optgroup label="Choose form">
                                             <?PHP
-                                            $qryForm = $app->getDBConnection()->query("SELECT id, FormName FROM datacollectionform WHERE id=$formIdSamplingData and CompanyID = ?", $loggedUserCompanyID);
+                                            $qryForm = $app->getDBConnection()->query("SELECT id, FormName FROM datacollectionform WHERE id=$formIdSamplingData and CompanyID = ? AND Status = '$formActiveStatus'", $loggedUserCompanyID);
 
                                             foreach ($qryForm as $row) {
                                                 echo '<option value="' . $row->id . '" ' . (isset($SelectedFormID) && $SelectedFormID == $row->id ? 'selected' : '') . '>' . $row->FormName . '</option>';

@@ -1,5 +1,5 @@
 <?php
-$qryFormName = "SELECT id, FormName FROM datacollectionform WHERE Status = 'Active' AND CompanyID = ? ORDER BY id";
+$qryFormName = "SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus' ORDER BY id";
 $rsQryFormName = $app->getDBConnection()->fetchAll($qryFormName, $loggedUserCompanyID);
 
 $divQuery = "SELECT DISTINCT DivisionCode, DivisionName FROM GeoInformation ORDER BY DivisionName ASC";

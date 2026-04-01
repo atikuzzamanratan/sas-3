@@ -49,7 +49,7 @@ $SuperID = $resQrySupervisor->id;
                                             onchange="getRecordID(document.getElementById('SelectedFormID').value)">
                                         <option>Select Form</option>
                                         <?PHP
-                                        $qryForm = $app->getDBConnection()->query("SELECT id, FormName FROM datacollectionform WHERE Status = 'Active' AND CompanyID = ?", $loggedUserCompanyID);
+                                        $qryForm = $app->getDBConnection()->query("SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus'", $loggedUserCompanyID);
 
                                         foreach ($qryForm as $row) {
                                             echo '<option value="' . $row->id . '">' . $row->FormName . '</option>';
