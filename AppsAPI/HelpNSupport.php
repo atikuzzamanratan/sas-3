@@ -60,22 +60,22 @@ include_once '../Components/header-includes.php';
                 </tr>
                 <tr>
                     <td><a href="tel:+8801720540859"><i class="bi bi-phone"></i>1st Line Support
-                            +8801720540859</a>
+                            01720540859</a>
                     </td>
                 </tr>
                 <tr>
-                    <td><a href="tel:+8801810096285"><i class="bi bi-phone"></i>2nd Line Support
-                            +8801810096285</a>
+                    <td><a href="tel:+8801329684382"><i class="bi bi-phone"></i>2nd Line Support
+                            01329684382</a>
                     </td>
                 </tr>
 				<tr>
-                    <td><a href="tel:+8801329684382"><i class="bi bi-phone"></i>3rd Line Support
-                            +8801329684382</a>
+                    <td><a href="tel:+8801841190330"><i class="bi bi-phone"></i>3rd Line Support
+                            01841190330</a>
                     </td>
                 </tr>
 				<tr>
-                    <td><a href="tel:+8801841190330"><i class="bi bi-phone"></i>4th Line Support
-                            +8801841190330</a>
+                    <td><a href="tel:+8801810096285"><i class="bi bi-phone"></i>4th Line Support
+                            01810096285</a>
                     </td>
                 </tr>
             </table>

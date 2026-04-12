@@ -28,11 +28,11 @@ include_once '../Components/header-includes.php';
                     <td><a href="../Documents/SAS-Mobile-Application-Manual-v3"><i class="bi bi-phone"></i>মোবাইল এপ্লিকেশন ম্যানুয়াল</a></td>
                 </tr>
                 <tr>
-                    <td><a href="../Documents/SAS-Listing-v15.pdf"><i class="bi bi-phone"></i>লিস্টিং প্রশ্নপত্র</a>
+                    <td><a href="../Documents/SAS-Listing-Form.pdf"><i class="bi bi-phone"></i>লিস্টিং প্রশ্নপত্র</a>
                     </td>
                 </tr>
                 <tr>
-                    <td><a href="../Documents/SAS-Household-v15.pdf"><i class="bi bi-phone"></i>মূল সার্ভে প্রশ্নপত্র (খানা)</a>
+                    <td><a href="../Documents/SAS-Main-Survey-Form.pdf"><i class="bi bi-phone"></i>মূল সার্ভে প্রশ্নপত্র</a>
                     </td>
                 </tr>
 
