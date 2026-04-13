@@ -32,6 +32,8 @@ $formTypeMain = 'Main';
 $formTypeListing = 'Listing';
 $formTypeFarm = 'Farm';
 
+$formViewOrder = " ORDER BY id DESC";
+
 $supervisorNamePrefix = 'cs';
 $testSupervisorLastDBId = 839;
 

@@ -4,7 +4,7 @@
 // ini_set('display_errors', 1);
 
 $cn = ConnectDB();
-$qryFormName = "SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus' ORDER BY id ASC";
+$qryFormName = "SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus' $formViewOrder";
 $rsQryFormName = $app->getDBConnection()->fetchAll($qryFormName, $loggedUserCompanyID);
 
 $qrySupervisor = "SELECT id FROM assignsupervisor WHERE SupervisorID = ?";

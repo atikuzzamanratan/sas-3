@@ -1,5 +1,5 @@
 <?php
-$qryFormName = "SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus' ORDER BY id ASC";
+$qryFormName = "SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus' $formViewOrder";
 $rsQryFormName = $app->getDBConnection()->fetchAll($qryFormName, $loggedUserCompanyID);
 
 if (strpos($loggedUserName, 'dist') !== false) {
@@ -57,12 +57,13 @@ if ($_REQUEST['show'] === 'Show') {
                                 <div class="col-lg-6">
                                     <select data-plugin-selectTwo class="form-control populate" name="FormID"
                                             id="FormID" title="Please select a form" required>
-                                            <option value="">Choose form</option>
+                                        <optgroup label="Choose form">
                                             <?PHP
                                             foreach ($rsQryFormName as $row) {
                                                 echo '<option value="' . $row->id . '"'.(isset($FormID) && !empty($FormID) && $row->id == $FormID ? ' selected' : '').'>' . $row->FormName . '</option>';
                                             }
                                             ?>
+                                        </optgroup>
                                     </select>
                                 </div>
                             </div>

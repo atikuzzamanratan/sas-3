@@ -37,7 +37,7 @@ if (is_null($FormID) || is_null($UserID)) {
                                                 id="FormID" required>
                                                 <optgroup label="Select Form">
                                                 <?PHP
-                                                $userForms = $app->getDBConnection()->query("select distinct id, FormName from datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus'", $loggedUserCompanyID);
+                                                $userForms = $app->getDBConnection()->query("select distinct id, FormName from datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus' $formViewOrder", $loggedUserCompanyID);
 
                                                 foreach ($userForms as $row) {
                                                     echo '<option value="' . $row->id . '">' . $row->FormName . '</option>';
