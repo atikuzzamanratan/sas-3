@@ -21,7 +21,8 @@ $CompanyID = $resQry->CompanyID;
 
 $qryFormString = "SELECT dcf.id, dcf.FormName FROM assignformtoagent aftu
 JOIN datacollectionform dcf on dcf.id = aftu.FormID 
-WHERE aftu.UserID = ?";
+WHERE dcf.Status = 'Active' AND aftu.UserID = ? 
+ORDER BY dcf.id DESC";
 $qryForm = $app->getDBConnection()->query($qryFormString, $UserID);
 
 include_once '../Components/header-includes.php';

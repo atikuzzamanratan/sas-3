@@ -18,7 +18,8 @@ if ($AuthToken != $AuthTokenValue) {
 
 $qryForm = "SELECT dcf.id, dcf.FormName FROM assignformtoagent aftu
 JOIN datacollectionform dcf on dcf.id = aftu.FormID 
-WHERE aftu.UserID = ?";
+WHERE dcf.Status = 'Active' AND aftu.UserID = ? 
+ORDER BY dcf.id DESC";
 $qryFormResult = $app->getDBConnection()->fetchAll($qryForm, $UserID);
 
 include_once '../Components/header-includes.php';

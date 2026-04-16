@@ -25,14 +25,14 @@ include_once '../Components/header-includes.php';
             <table class="table table-bordered table-striped">
                 <tbody>
                 <tr>
-                    <td><a href="../Documents/SAS-Mobile-Application-Manual-v3"><i class="bi bi-phone"></i>মোবাইল এপ্লিকেশন ম্যানুয়াল</a></td>
+                    <td><a href="../Documents/SAS-3-Mobile-Application-Manual"><i class="bi bi-phone"></i>মোবাইল এপ্লিকেশন ম্যানুয়াল</a></td>
                 </tr>
                 <tr>
-                    <td><a href="../Documents/SAS-Listing-Form.pdf"><i class="bi bi-phone"></i>লিস্টিং প্রশ্নপত্র</a>
+                    <td><a href="../Documents/SAS-3-Listing-Form.pdf"><i class="bi bi-phone"></i>লিস্টিং প্রশ্নপত্র</a>
                     </td>
                 </tr>
                 <tr>
-                    <td><a href="../Documents/SAS-Main-Survey-Form.pdf"><i class="bi bi-phone"></i>মূল সার্ভে প্রশ্নপত্র</a>
+                    <td><a href="../Documents/SAS-3-Main-Survey-Form.pdf"><i class="bi bi-phone"></i>মূল সার্ভে প্রশ্নপত্র</a>
                     </td>
                 </tr>
 
