@@ -58,6 +58,7 @@ web.config
 /Uploads/
 /EditForms/*/*
 /AppsAPI/CurrentFormVersion.txt
+/AppsAPI/submission.php
 webhookURLs/generated.xml
 webhookURLs/last_instance.xml
 webhookURLs/last_prefill_dump.json
