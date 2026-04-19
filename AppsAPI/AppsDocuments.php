@@ -25,7 +25,7 @@ include_once '../Components/header-includes.php';
             <table class="table table-bordered table-striped">
                 <tbody>
                 <tr>
-                    <td><a href="../Documents/SAS-3-Mobile-Application-Manual"><i class="bi bi-phone"></i>মোবাইল এপ্লিকেশন ম্যানুয়াল</a></td>
+                    <td><a href="../Documents/SAS-3-Mobile-Application-Manual.pdf"><i class="bi bi-phone"></i>মোবাইল এপ্লিকেশন ম্যানুয়াল</a></td>
                 </tr>
                 <tr>
                     <td><a href="../Documents/SAS-3-Listing-Form.pdf"><i class="bi bi-phone"></i>লিস্টিং প্রশ্নপত্র</a>
