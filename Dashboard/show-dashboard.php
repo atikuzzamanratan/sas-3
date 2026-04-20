@@ -270,7 +270,7 @@ if($_REQUEST['show'] === 'Show'){
             $PendingData = $result_TotalDataQry->Pending;
 
             if ($FormID == $formIdSamplingData) {
-                $TotalTergetQry = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where PSUUserID $distUserIdSelectCodition AND CompanyID = ? and PSUUserID <>'' and FarmName='' and PSUUserID>0";
+                $TotalTergetQry = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where PSUUserID $distUserIdSelectCodition AND CompanyID = ? and PSUUserID <>'' and FarmName='' and PSUUserID>0 AND PSUUserID NOT IN $testingUserIDs";
                 $TotalTergetQry .= $qryCreate2;
 
                 $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID $distUserIdSelectCodition AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
@@ -282,7 +282,7 @@ if($_REQUEST['show'] === 'Show'){
                 $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdSamplingData, $loggedUserCompanyID);
 
             } else if ($FormID == $formIdMainData) {
-                $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where PSUUserID $distUserIdSelectCodition AND CompanyID = ? and PSUUserID <>'' and FarmName='' and PSUUserID>0";
+                $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where PSUUserID $distUserIdSelectCodition AND CompanyID = ? and PSUUserID <>'' and FarmName='' and PSUUserID>0 AND PSUUserID NOT IN $testingUserIDs";
                 $TotalTergetQry .= $qryCreate2;
 
                 $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID $distUserIdSelectCodition AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
@@ -293,7 +293,7 @@ if($_REQUEST['show'] === 'Show'){
                 $TotalDataLast7DaysQry .= $qryCreate;
                 $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdMainData, $loggedUserCompanyID);
             } else if ($FormID == $formIdFarmData) {
-                $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where PSUUserID $distUserIdSelectCodition AND CompanyID = ? and PSUUserID <>'' and FarmName<>'' and PSUUserID>0";
+                $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where PSUUserID $distUserIdSelectCodition AND CompanyID = ? and PSUUserID <>'' and FarmName<>'' and PSUUserID>0 AND PSUUserID NOT IN $testingUserIDs";
                 $TotalTergetQry .= $qryCreate2;
 
                 $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID $distUserIdSelectCodition AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
@@ -391,7 +391,7 @@ if($_REQUEST['show'] === 'Show'){
             $PendingData = $result_TotalDataQry->Pending;
 
             if ($FormID == $formIdSamplingData) {
-                $TotalTergetQry = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where CompanyID = ? and PSUUserID <>'' and FarmName='' and PSUUserID>0";
+                $TotalTergetQry = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where CompanyID = ? and PSUUserID <>'' and FarmName='' and PSUUserID>0 AND PSUUserID NOT IN $testingUserIDs";
                 $TotalTergetQry .= $qryCreate2;
 
                 $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
@@ -403,7 +403,7 @@ if($_REQUEST['show'] === 'Show'){
                 $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdSamplingData, $loggedUserCompanyID);
 
             } else if ($FormID == $formIdMainData) {
-                $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where CompanyID = ? and PSUUserID <>'' and FarmName='' and PSUUserID>0";
+                $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where CompanyID = ? and PSUUserID <>'' and FarmName='' and PSUUserID>0 AND PSUUserID NOT IN $testingUserIDs";
                 $TotalTergetQry .= $qryCreate2;
 
                 $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
@@ -414,7 +414,7 @@ if($_REQUEST['show'] === 'Show'){
                 $TotalDataLast7DaysQry .= $qryCreate;
                 $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdMainData, $loggedUserCompanyID);
             } else if ($FormID == $formIdFarmData) {
-                $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where CompanyID = ? and PSUUserID <>'' and FarmName<>'' and PSUUserID>0";
+                $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where CompanyID = ? and PSUUserID <>'' and FarmName<>'' and PSUUserID>0 AND PSUUserID NOT IN $testingUserIDs";
                 $TotalTergetQry .= $qryCreate2;
 
                 $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
