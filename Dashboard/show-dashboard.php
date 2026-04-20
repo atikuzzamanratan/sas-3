@@ -394,7 +394,7 @@ if($_REQUEST['show'] === 'Show'){
                 $TotalTergetQry = "SELECT SUM(NumberOfRecord) as TotalTerget FROM PSUList where CompanyID = ? and PSUUserID <>'' and FarmName='' and PSUUserID>0 AND PSUUserID NOT IN $testingUserIDs";
                 $TotalTergetQry .= $qryCreate2;
 
-                $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
+                $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID NOT IN $testingUserIDs AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
                 $TotalDataTodayQry .= $qryCreate;
                 $result_TotalDataTodayQry = $app->getDBConnection()->fetch($TotalDataTodayQry, $formIdSamplingData, $loggedUserCompanyID);
 
@@ -406,7 +406,7 @@ if($_REQUEST['show'] === 'Show'){
                 $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where CompanyID = ? and PSUUserID <>'' and FarmName='' and PSUUserID>0 AND PSUUserID NOT IN $testingUserIDs";
                 $TotalTergetQry .= $qryCreate2;
 
-                $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
+                $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE UserID NOT IN $testingUserIDs AND FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
                 $TotalDataTodayQry .= $qryCreate;
                 $result_TotalDataTodayQry = $app->getDBConnection()->fetch($TotalDataTodayQry, $formIdMainData, $loggedUserCompanyID);
 
@@ -414,7 +414,7 @@ if($_REQUEST['show'] === 'Show'){
                 $TotalDataLast7DaysQry .= $qryCreate;
                 $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdMainData, $loggedUserCompanyID);
             } else if ($FormID == $formIdFarmData) {
-                $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where CompanyID = ? and PSUUserID <>'' and FarmName<>'' and PSUUserID>0 AND PSUUserID NOT IN $testingUserIDs";
+                $TotalTergetQry = "SELECT SUM(NumberOfRecordForMainSurvey) as TotalTerget FROM PSUList where UserID NOT IN $testingUserIDs AND CompanyID = ? and PSUUserID <>'' and FarmName<>'' and PSUUserID>0 AND PSUUserID NOT IN $testingUserIDs";
                 $TotalTergetQry .= $qryCreate2;
 
                 $TotalDataTodayQry = "SELECT COUNT(*) AS TotalData FROM xformrecord WHERE FormId = ? AND CompanyId = ? AND (EntryDate BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59')";
@@ -426,7 +426,12 @@ if($_REQUEST['show'] === 'Show'){
                 $result_TotalDataLast7DaysQry = $app->getDBConnection()->fetch($TotalDataLast7DaysQry, $formIdFarmData, $loggedUserCompanyID);
             }
 
-            $TotalUserTodayQry = "SELECT count(distinct(UserID)) as TotalUser FROM UserLogStatus WHERE UserId in (SELECT id FROM userinfo where UserName like 'cd%' and IsActive=1)  and [DateTime] BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59'";
+            /*$TotalUserTodayQry = "SELECT count(distinct(UserID)) as TotalUser FROM UserLogStatus WHERE UserId in (SELECT id FROM userinfo where UserName like 'cd%' and IsActive=1)  and [DateTime] BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59'";
+            $TotalUserTodayQry .= $qryCreate;
+            $result_TotalUserTodayQry = $app->getDBConnection()->fetch($TotalUserTodayQry);
+            $TotalUserToday = $result_TotalUserTodayQry->TotalUser;*/
+
+            $TotalUserTodayQry = "SELECT count(distinct(UserID)) as TotalUser FROM UserLogStatus WHERE UserId in (SELECT PSUUserID FROM PSUList WHERE PSUUserID NOT IN $testingUserIDs)  and [DateTime] BETWEEN '$todayDate 00:00:00' AND '$todayDate 23:59:59'";
             $TotalUserTodayQry .= $qryCreate;
             $result_TotalUserTodayQry = $app->getDBConnection()->fetch($TotalUserTodayQry);
             $TotalUserToday = $result_TotalUserTodayQry->TotalUser;
@@ -445,19 +450,34 @@ if($_REQUEST['show'] === 'Show'){
             $result_TotalRejectQry = $app->getDBConnection()->fetch($TotalRejectQry, $loggedUserCompanyID, $FormID);
             $TotalReject = $result_TotalRejectQry->TotalReject;
 
-            $TotalDataCollectorQry = "SELECT COUNT(id) AS TotalUser FROM userinfo WHERE IsActive = ? AND CompanyID = ? AND UserName LIKE '%$dataCollectorNamePrefix%' ";
+            /*$TotalDataCollectorQry = "SELECT COUNT(id) AS TotalUser FROM userinfo WHERE IsActive = ? AND CompanyID = ? AND UserName LIKE '%$dataCollectorNamePrefix%' ";
             $TotalDataCollectorQry .= $qryCreate3;
             $result_TotalDataCollectorQry = $app->getDBConnection()->fetch($TotalDataCollectorQry, 1, $loggedUserCompanyID);
+             $TotalUser = $result_TotalDataCollectorQry->TotalUser;*/
+
+            $TotalDataCollectorQry = "SELECT COUNT(DISTINCT(PSUUserID)) TotalUser FROM PSUList WHERE PSUUserID NOT IN $testingUserIDs ";
+            $TotalDataCollectorQry .= $qryCreate3;
+            $result_TotalDataCollectorQry = $app->getDBConnection()->fetch($TotalDataCollectorQry);
             $TotalUser = $result_TotalDataCollectorQry->TotalUser;
 
-            $TotalDataCollectorOnlineQry = "SELECT COUNT(id) AS TotalUser FROM userinfo WHERE IsActive = ? AND IsOnline = ? AND CompanyID = ? AND UserName LIKE '%$dataCollectorNamePrefix%' ";
+            /*$TotalDataCollectorOnlineQry = "SELECT COUNT(id) AS TotalUser FROM userinfo WHERE IsActive = ? AND IsOnline = ? AND CompanyID = ? AND UserName LIKE '%$dataCollectorNamePrefix%' ";
             $TotalDataCollectorOnlineQry .= $qryCreate3;
             $result_TotalDataCollectorOnlineQry = $app->getDBConnection()->fetch($TotalDataCollectorOnlineQry, 1, 1, $loggedUserCompanyID);
+            $TotalUserOnline = $result_TotalDataCollectorOnlineQry->TotalUser;*/
+
+            $TotalDataCollectorOnlineQry = "SELECT COUNT(*) as TotalUser FROM userinfo WHERE IsOnline = 1 AND id IN(SELECT PSUUserID FROM PSUList WHERE PSUUserID NOT IN $testingUserIDs) ";
+            $TotalDataCollectorOnlineQry .= $qryCreate3;
+            $result_TotalDataCollectorOnlineQry = $app->getDBConnection()->fetch($TotalDataCollectorOnlineQry);
             $TotalUserOnline = $result_TotalDataCollectorOnlineQry->TotalUser;
 
-            $TotalSupervisorQry = "SELECT COUNT( DISTINCT SupervisorID) Supervisor FROM assignsupervisor WHERE CompanyID = ?";
+            /*$TotalSupervisorQry = "SELECT COUNT( DISTINCT SupervisorID) Supervisor FROM assignsupervisor WHERE CompanyID = ?";
             $TotalSupervisorQry .= $qryCreate;
             $result_TotalSupervisorQry = $app->getDBConnection()->fetch($TotalSupervisorQry, $loggedUserCompanyID);
+            $TotalSupervisor = $result_TotalSupervisorQry->Supervisor;*/
+
+            $TotalSupervisorQry = "SELECT COUNT(DISTINCT(SupervisorID)) 'Supervisor' FROM assignsupervisor WHERE UserID IN (SELECT DISTINCT(PSUUserID) FROM PSUList WHERE PSUUserID NOT IN $testingUserIDs)";
+            $TotalSupervisorQry .= $qryCreate;
+            $result_TotalSupervisorQry = $app->getDBConnection()->fetch($TotalSupervisorQry);
             $TotalSupervisor = $result_TotalSupervisorQry->Supervisor;
 
             $TotalSupervisorOnlineQry = "SELECT COUNT( DISTINCT assignsupervisor.SupervisorID) SupervisorOnline FROM assignsupervisor join userinfo on assignsupervisor.SupervisorID = userinfo.id WHERE assignsupervisor.CompanyID = ? AND userinfo.IsOnline = ?";
