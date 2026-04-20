@@ -37,8 +37,8 @@ $formViewOrder = " ORDER BY id DESC";
 $supervisorNamePrefix = 'cs';
 $testSupervisorLastDBId = 839;
 
-//$testingUserIDs = "(68, 69)";
-$testingUserIDs = "(0)";
+$testingUserIDs = "(68, 69)";
+//$testingUserIDs = "(0)";
 
 $columnNameToUpdateValueForMainData = 'A_02';
 $columnNameToUpdateValueForListingData = 'SampleHHNo';
