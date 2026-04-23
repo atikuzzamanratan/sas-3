@@ -36,6 +36,7 @@ $qry = "SELECT pl.id,
 			pl.VillageCode, 
 			pl.PSUUserID, 
 			pl.NumberOfRecord,
+			pl.NumberOfRecordForMainSurvey,
 			ui.UserName AS PSUUserName, 
 			ui.FullName AS PSUUserFullName, 
 			ui.MobileNumber AS PSUUserMobileNumber 
@@ -47,7 +48,7 @@ $qry = "SELECT pl.id,
 $resQry = $app->getDBConnection()->fetchAll($qry, $CompanyID, $loggedUserID);
 } else {
 $qry = "SELECT id, PSU, DivisionName, DivisionCode, DistrictName, DistrictCode, CityCorporationName, CityCorporationCode, UpazilaName, UpazilaCode, 
-MunicipalityName, MunicipalityCode, UnionWardName, UnionWardCode, RMO, MauzaName, MauzaCode, VillageName, VillageCode, PSUUserID, NumberOfRecord,
+MunicipalityName, MunicipalityCode, UnionWardName, UnionWardCode, RMO, MauzaName, MauzaCode, VillageName, VillageCode, PSUUserID, NumberOfRecord, NumberOfRecordForMainSurvey,
 (SELECT UserName FROM userinfo WHERE id = PSUUSerID) AS PSUUserName, (SELECT FullName FROM userinfo WHERE id = PSUUSerID) AS PSUUserFullName, 
 (SELECT MobileNumber FROM userinfo WHERE id = PSUUSerID) AS PSUUserMobileNumber 
 FROM PSUList WHERE CompanyID = ? ORDER BY PSU ASC";
@@ -76,6 +77,7 @@ $qry = "SELECT pl.id,
 			pl.VillageCode, 
 			pl.PSUUserID, 
 			pl.NumberOfRecord,
+			pl.NumberOfRecordForMainSurvey,
 			ui.UserName AS PSUUserName, 
 			ui.FullName AS PSUUserFullName, 
 			ui.MobileNumber AS PSUUserMobileNumber 
@@ -94,13 +96,13 @@ foreach ($resQry as $row) {
     $PSU = $row->PSU;
     $DivisionName = $row->DivisionName;
     $DistrictName = $row->DistrictName;
-    $CityCorporationName = $row->CityCorporationName;
     $UpazilaName = $row->UpazilaName;
-    $MunicipalityName = $row->MunicipalityName;
     $UnionWardName = $row->UnionWardName;
     $MauzaName = $row->MauzaName;
     $VillageName = $row->VillageName;
     $AssignedUser = $row->PSUUserFullName . ' (' . $row->PSUUserName . ')';
+    $ListingData = $row->NumberOfRecord;
+    $MainData = $row->NumberOfRecordForMainSurvey;
 	$AssignedMobile = $row->PSUUserMobileNumber;
 
     $SubData = array();
@@ -108,14 +110,14 @@ foreach ($resQry as $row) {
     $SubData[] = $PSU;
     $SubData[] = $DivisionName;
     $SubData[] = $DistrictName;
-    $SubData[] = $CityCorporationName;
     $SubData[] = $UpazilaName;
-    $SubData[] = $MunicipalityName;
     $SubData[] = $UnionWardName;
     $SubData[] = $MauzaName;
     $SubData[] = $VillageName;
     $SubData[] = $AssignedUser;
-	$SubData[] = whatsAppLink($AssignedMobile);
+    $SubData[] = whatsAppLink($AssignedMobile);
+    $SubData[] = $ListingData;
+    $SubData[] = $MainData;
 
     $il++;
 

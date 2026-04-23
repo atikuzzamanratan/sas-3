@@ -71,14 +71,14 @@ if ($loggedUserName == 'admin') {
                                     <th>PSU</th>
                                     <th>Division</th>
                                     <th>District</th>
-                                    <th>City Corp.</th>
                                     <th>Upazila</th>
-                                    <th>Municipality</th>
                                     <th>Union/Ward</th>
                                     <th>Mauza</th>
                                     <th>Village</th>
                                     <th>User</th>
-									<th>Mobile</th>
+                                    <th>Mobile</th>
+                                    <th>Listing Data Target</th>
+                                    <th>Main Data Target</th>
                                 </tr>
                                 </thead>
                                 <tbody>
