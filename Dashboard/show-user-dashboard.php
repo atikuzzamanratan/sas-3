@@ -33,7 +33,7 @@ if ($FormID == $formIdMainData) {
     (SELECT COUNT(id) FROM xformrecord WHERE xformrecord.PSU = PSUList.PSU and xformrecord.UserID=userinfo.id AND xformrecord.FormId = ?) as Collected 
     FROM PSUList JOIN userinfo ON PSUList.PSUUserID = userinfo.id WHERE PSUList.FarmName = '' AND PSUList.PSUUserID = ?";
 
-    $FindMissingAndDuplicateQuery = "EXEC find_Duplicate_Missing_HH_For_User $FormID, '$columnNameToUpdateValueForMainData', $maxNumberOfHHForSampling, $UserID;";
+    $FindMissingAndDuplicateQuery = "EXEC find_Duplicate_Missing_HH_For_User $FormID, '$columnNameToUpdateValueForListingData', $maxNumberOfHHForSampling, $UserID;";
     $FindMissingAndDuplicateQueryRS = $app->getDBConnection()->fetchAll($FindMissingAndDuplicateQuery);
 
 } else if ($FormID == $formIdSamplingData) {
@@ -220,9 +220,9 @@ $DataSendingDateRS = $app->getDBConnection()->fetchAll($DataSendingDateQuery, $U
                                     <thead>
                                     <tr>
                                         <th>PSU</th>
-                                        <th>Unique Data</th>
-                                        <th>Missing Data</th>
-                                        <th>Duplicate Data</th>
+                                        <th>Total Unique Data</th>
+                                        <th>Total Missing Data</th>
+                                        <th>Total Duplicate Data</th>
                                         <th>Collected Data</th>
                                     </tr>
                                     </thead>
