@@ -223,7 +223,7 @@ $DataSendingDateRS = $app->getDBConnection()->fetchAll($DataSendingDateQuery, $U
                                         <th>Total Unique Data</th>
                                         <th>Total Missing Data</th>
                                         <th>Total Duplicate Data</th>
-                                        <th>Collected Data</th>
+                                        <th>Collected Household</th>
                                     </tr>
                                     </thead>
                                     <tbody>
