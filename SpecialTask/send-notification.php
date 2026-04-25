@@ -27,7 +27,7 @@ $SuperID = $resQrySupervisor->id;
                                         if ($loggedUserName == 'admin') {
                                             $qryDistUser = $app->getDBConnection()->query("SELECT id, UserName, FullName FROM userinfo WHERE IsActive = 1 AND UserName <> '$loggedUserName' ORDER BY UserName ASC");
                                         } else if (strpos($loggedUserName, 'admin') !== false) {
-                                            $qryDistUser = $app->getDBConnection()->query("SELECT id, UserName, FullName FROM userinfo WHERE IsActive = 1 AND UserName <> '$loggedUserName' AND CompanyID = ? ORDER BY UserName ASC", $loggedUserCompanyID);
+                                            $qryDistUser = $app->getDBConnection()->query("SELECT id, UserName, FullName FROM userinfo WHERE IsActive = 1 AND UserName <> '$loggedUserName' AND CompanyID = ? $filterPSUAssignedUser ORDER BY UserName ASC", $loggedUserCompanyID);
                                         } else if ($SuperID) {
                                             $qryDistUser = $app->getDBConnection()->query("SELECT u.id, u.UserName, u.FullName FROM assignsupervisor AS a JOIN userinfo as u ON a.UserID = u.id WHERE u.IsActive = 1 AND a.SupervisorID = ?", $loggedUserID);
                                         } else if (strpos($loggedUserName, 'dist') !== false) {

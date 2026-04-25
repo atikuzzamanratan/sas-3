@@ -26,7 +26,7 @@ $SuperID = $resQrySupervisor->id;
                                             class="form-control populate" required">
                                     <option>Select User</option>
                                     <?PHP
-                                    $qryUser = $app->getDBConnection()->query("SELECT id, UserName, FullName FROM userinfo WHERE CompanyID = ? and IsActive = 1 and UserName like '$dataCollectorNamePrefix%'", $loggedUserCompanyID);
+                                    $qryUser = $app->getDBConnection()->query("SELECT id, UserName, FullName FROM userinfo WHERE CompanyID = ? and IsActive = 1 and UserName like '$dataCollectorNamePrefix%' $filterPSUAssignedUser", $loggedUserCompanyID);
 
                                     foreach ($qryUser as $row) {
                                         $uID = $row->id;

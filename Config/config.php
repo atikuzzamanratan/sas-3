@@ -33,6 +33,7 @@ $formTypeListing = 'Listing';
 $formTypeFarm = 'Farm';
 
 $formViewOrder = " ORDER BY id DESC";
+$filterPSUAssignedUser=" AND id IN(SELECT PSUUserID FROM PSUList)";
 
 $supervisorNamePrefix = 'cs';
 $testSupervisorLastDBId = 839;
