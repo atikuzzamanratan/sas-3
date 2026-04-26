@@ -98,7 +98,7 @@ if ($_REQUEST['show'] === "Show") {
     (SELECT COUNT(id) FROM xformrecord WHERE xformrecord.PSU = PSUList.PSU and xformrecord.UserID=userinfo.id AND xformrecord.FormId = ?) as Collected 
     FROM PSUList JOIN userinfo ON PSUList.PSUUserID = userinfo.id WHERE PSUList.PSUUserID = ? AND PSUList.FarmName = ''";
 
-    $FindMissingAndDuplicateQuery = "EXEC find_Duplicate_Missing_HH_For_User $FormID, '$columnNameToUpdateValueForMainData', $maxNumberOfHHForSampling, $UserID;";
+    $FindMissingAndDuplicateQuery = "EXEC find_Duplicate_Missing_HH_For_User $FormID, '$columnNameToUpdateValueForListingData', $maxNumberOfHHForSampling, $UserID;";
     $FindMissingAndDuplicateQueryRS = $app->getDBConnection()->fetchAll($FindMissingAndDuplicateQuery);
     } else if ($FormID == $formIdSamplingData) {
         $QueryDataCollectionStatus = "SELECT DISTINCT PSUList.PSUUserID, PSUList.PSU, userinfo.FullName, PSUList.NumberOfRecord as 'Target',
