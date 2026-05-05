@@ -17,6 +17,8 @@ if (strpos($loggedUserName, 'dist') !== false) {
     $rsDivQuery = $app->getDBConnection()->fetchAll($divQuery, $loggedUserCompanyID);
 }
 
+//echo $divQuery;
+
 if($_REQUEST['show'] === 'Show'){
     $DivisionCode = $_REQUEST['DivisionCode'];
     $DistrictCode = $_REQUEST['DistrictCode'];
@@ -344,7 +346,7 @@ if($_REQUEST['show'] === 'Show'){
             $result_TotalSupervisorOnlineQry = $app->getDBConnection()->fetch($TotalSupervisorOnlineQry, $loggedUserCompanyID, 1);
             $TotalSupervisorOnline = $result_TotalSupervisorOnlineQry->SupervisorOnline;
 
-            $TopSenderQuery = "SELECT top 10 xfr.UserID, ui.UserName, COUNT(*) AS Number FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id WHERE xfr.UserID $distUserIdSelectCodition AND  xfr.CompanyId = ?  AND xfr.FormId = ? AND ui.id NOT IN(68, 69)";
+            $TopSenderQuery = "SELECT top 10 xfr.UserID, ui.UserName, COUNT(*) AS Number FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id WHERE xfr.UserID $distUserIdSelectCodition AND  xfr.CompanyId = ?  AND xfr.FormId = ? AND ui.id NOT IN $testingUserIDs";
             $TopSenderQuery .= $qryCreate;
             //$TopSenderQuery .= " GROUP BY xfr.UserID,ui.UserName ORDER BY Number DESC";
             $TopSenderQuery .= " GROUP BY xfr.UserID,ui.UserName";
@@ -352,9 +354,57 @@ if($_REQUEST['show'] === 'Show'){
             $TopSenderQuery .= " ORDER BY Number DESC";
             $result_TopSender = $app->getDBConnection()->fetchAll($TopSenderQuery, $loggedUserCompanyID, $FormID);
 
-            $LastSenderQuery = "SELECT top 10 xfr.UserID, ui.UserName, COUNT(*) AS Number FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id WHERE xfr.UserID $distUserIdSelectCodition AND  xfr.CompanyId = ?  AND xfr.FormId = ? AND ui.id NOT IN(68, 69)";
+            /*$LastSenderQuery = "SELECT top 10 xfr.UserID, ui.UserName, COUNT(*) AS Number FROM xformrecord xfr JOIN userinfo ui ON xfr.UserID = ui.id WHERE xfr.UserID $distUserIdSelectCodition AND  xfr.CompanyId = ?  AND xfr.FormId = ? AND ui.id NOT IN $testingUserIDs";
             $LastSenderQuery .= $qryCreate;
             $LastSenderQuery .= " GROUP BY xfr.UserID,ui.UserName ORDER BY Number ASC";
+            $result_LastSender = $app->getDBConnection()->fetchAll($LastSenderQuery, $loggedUserCompanyID, $FormID);*/
+
+            $FarmString = "";
+            $CountParam = "";
+            if ($FormID == $formIdMainData) {
+                $FarmString = "FarmName=''";
+                $CountParam = "NumberOfRecordForMainSurvey";
+            } elseif ($FormID == $formIdSamplingData) {
+                $FarmString = "FarmName=''";
+                $CountParam = "NumberOfRecord";
+            } elseif ($FormID == $formIdFarmData) {
+                $FarmString = "FarmName<>''";
+                $CountParam = "NumberOfRecord";
+            }
+
+
+
+            $LastSenderQuery = "SELECT TOP 10
+                                xfr.UserID,
+                                ui.UserName,
+                                COUNT(*) AS Collected,
+                                ISNULL(pl.SumTarget, 0) AS Target,
+                                CAST(
+                                    ROUND(
+                                        100.0 * COUNT(*) / NULLIF(pl.SumTarget, 0),
+                                        2
+                                    ) AS DECIMAL(5,2)
+                                ) AS Ratio
+                            FROM xformrecord xfr
+                            JOIN userinfo ui ON xfr.UserID = ui.id
+                            LEFT JOIN (
+                                SELECT 
+                                    PSUUserID,
+                                    SUM($CountParam) AS SumTarget
+                                FROM PSUList WHERE $FarmString
+                                GROUP BY PSUUserID
+                            ) pl ON xfr.UserID = pl.PSUUserID
+                            WHERE xfr.CompanyId = ?
+                              AND xfr.UserID $distUserIdSelectCodition
+                              AND xfr.FormId = ?
+                              AND ui.id NOT IN $testingUserIDs
+                            GROUP BY 
+                                xfr.UserID,
+                                ui.UserName,
+                                pl.SumTarget
+                            ORDER BY 
+                                Ratio ASC;";
+
             $result_LastSender = $app->getDBConnection()->fetchAll($LastSenderQuery, $loggedUserCompanyID, $FormID);
 
             $DataSendingDateQuery = " Select CONVERT(date, EntryDate) as DataDate, count(*) as Number from xformrecord where UserID NOT IN $testingUserIDs AND UserID $distUserIdSelectCodition AND  CompanyId = ? AND FormId = ?";
@@ -585,8 +635,7 @@ if($_REQUEST['show'] === 'Show'){
                             <div class="col-xl-4 text-center">
                                 <div class="liquid-meter-wrapper liquid-meter-sm mt-3">
                                     <div class="liquid-meter">
-                                        <meter min="0" max="100" value="<?php echo $DataCollectionPercentage; ?>"
-                                               id="meterSales"></meter>
+                                        <meter min="0" max="100" value="<?php echo $DataCollectionPercentage; ?>" id="meterSales"></meter>
                                     </div>
                                 </div>
                                 <h2 class="card-title mt-3">Target : <?php echo $TotalTerget; ?></h2>
@@ -714,15 +763,6 @@ if($_REQUEST['show'] === 'Show'){
                                                 <strong class="amount"><?php echo $TotalUserToday; ?></strong>
                                             </div>
                                         </div>
-                                        <!--<div class="summary">
-                                            <h4 class="title">Last 7 Day's Data</h4>
-                                            <div class="info">
-                                                <strong class="amount"><?php /*echo $TotalDataLast7Days; */ ?></strong>
-                                            </div>
-                                        </div>-->
-                                        <!--<div class="summary-footer">
-                                            <a class="text-muted text-uppercase" href="#">(view growth)</a>
-                                        </div>-->
                                     </div>
                                 </div>
                             </div>
@@ -807,20 +847,6 @@ if($_REQUEST['show'] === 'Show'){
                             <?php
                             $il = 1;
                             foreach ($result_LastSender as $row) {
-                                /*$UserIDVal = $row->UserID;
-                                $UserName = $row->UserName;
-                                $UserFullName = getName('FullName', 'userinfo', $UserIDVal);
-                                $NumberOfTopData = $row->Number;
-                                if ($FormID == $formIdMainData) {
-                                    $NumberOfTargetData = getValue("PSUList", "SUM(NumberOfRecordForMainSurvey)", "FarmName='' AND PSUUserID = $UserIDVal");
-                                } elseif ($FormID == $formIdSamplingData) {
-                                    $NumberOfTargetData = getValue("PSUList", "SUM(NumberOfRecord)", "FarmName='' AND PSUUserID = $UserIDVal");
-                                } elseif ($FormID == $formIdFarmData) {
-                                    $NumberOfTargetData = getValue("PSUList", "SUM(NumberOfRecord)", "FarmName<>'' AND PSUUserID = $UserIDVal");
-                                }
-
-                                $UserDataCollectionRatio = Ratio($NumberOfTopData, $NumberOfTargetData);*/
-
                                 $UserIDVal = $row->UserID;
                                 $UserName = $row->UserName;
                                 $UserFullName = getName('FullName', 'userinfo', $UserIDVal);
@@ -877,23 +903,6 @@ if($_REQUEST['show'] === 'Show'){
                 </section>
             </div>
         </div>
-
-        <!--<div class="row">
-            <div class="col-lg-12">
-                <section class="card">
-                    <header class="card-header">
-                        <div class="card-actions">
-                            <a href="#" class="card-action card-action-toggle" data-card-toggle></a>
-                        </div>
-                        <h2 class="card-title">Data Map</h2>
-                    </header>
-                    <div class="card-body">
-                        <div id="gmap-basic" style="height: 500px; width: 100%;"></div>
-                    </div>
-                </section>
-            </div>
-        </div>-->
-        <!-- end: page -->
     </section>
 </div>
 

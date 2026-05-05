@@ -210,16 +210,21 @@ $CountNotification = count($notifications);
             <div id="userbox" class="userbox">
                 <a href="#" data-bs-toggle="dropdown">
                     <figure class="profile-picture">
-                        <!-- <img src="../img/cps_logo.png" alt="Joseph Doe" class="rounded-circle"
-                             data-lock-picture="../img/cps_logo.png"/> -->
-
                         <img src="../img/sas_logo.png" alt="Joseph Doe" class="rounded-circle"
                              data-lock-picture="../img/sas_logo.png"/>
 
                     </figure>
                     <div class="profile-info" data-lock-name="<?php echo $loggedUserName; ?>" data-lock-email="#">
                         <span class="name"><?php echo $loggedUserName; ?></span>
-                        <span class="role"><?php echo $loggedUserFullName; ?></span>
+                        <!--<span class="role"><?php /*echo $loggedUserFullName; */ ?></span>-->
+
+                        <?php
+                        $words = explode(' ', $loggedUserFullName);
+                        $cropped = implode(' ', array_slice($words, 0, 4));
+                        ?>
+                        <span class="role-wrapper">
+                            <span class="role"><?php echo $cropped; ?></span>
+                        </span>
                     </div>
 
                     <i class="fa custom-caret"></i>
