@@ -24,7 +24,7 @@ if(isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
                 <section class="card">
                     <div class="card-body">
                         <form class="form-horizontal form-bordered" action="" method="post">
-                            <div class="form-group row pb-3">
+                            <!--<div class="form-group row pb-3">
                                 <label class="col-lg-3 control-label text-sm-end pt-2">Form Select<span
                                             class="required">*</span></label>
                                 <div class="col-lg-6">
@@ -32,16 +32,16 @@ if(isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
                                             class="form-control populate" required>
                                         <optgroup label="Choose form">
                                             <?PHP
-                                            $qryForm = $app->getDBConnection()->query("SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus' $formViewOrder", $loggedUserCompanyID);
+/*                                            $qryForm = $app->getDBConnection()->query("SELECT id, FormName FROM datacollectionform WHERE CompanyID = ? AND Status = '$formActiveStatus' $formViewOrder", $loggedUserCompanyID);
 
                                             foreach ($qryForm as $row) {
                                                 echo '<option value="' . $row->id . '"' . (isset($SelectedFormID) && !empty($SelectedFormID) && $row->id == $SelectedFormID ? ' selected' : '') . '>' . $row->FormName . '</option>';
                                             }
-                                            ?>
+                                            */?>
                                         </optgroup>
                                     </select>
                                 </div>
-                            </div>
+                            </div>-->
 
                             <div class="form-group row pb-3">
                                 <label class="col-lg-3 control-label text-sm-end pt-2">User Select<span
@@ -117,7 +117,7 @@ if(isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
                 <?php
 
                 if ($_REQUEST['show'] === 'Show') {
-                    $SelectedFormID = $_REQUEST['SelectedFormID'];
+                    //$SelectedFormID = $_REQUEST['SelectedFormID'];
                     $SelectedUserID = $_REQUEST['SelectedUserID'];
                     $SelectedUserName = getValue('userinfo', 'UserName', "id = $SelectedUserID");
                     $SelectedFullName = getValue('userinfo', 'FullName', "id = $SelectedUserID");
@@ -130,6 +130,7 @@ if(isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
                     } elseif ($SelectedLocationType === "allLocation") {
                         $selQuery = "SELECT * FROM UserLiveLocation WHERE UserId = ? ORDER BY DateTime DESC";
                     }
+                    //echo $selQuery;
                     $resQry = $app->getDBConnection()->fetchAll($selQuery, $SelectedUserID);
 
                     $locationArray = array();
@@ -155,9 +156,10 @@ if(isset($_REQUEST['show']) && $_REQUEST['show'] === 'Show') {
                     ?>
                     <section class="card">
                         <div class="card-header">
-                            <div class="card-title">Form
-                                : <?php echo getValue('datacollectionform', 'FormName', "id = $SelectedFormID"); ?></div>
-                            <div class="card-subtitle">User: <?php echo $UserData; ?></div>
+                            <!--<div class="card-title">Form
+                                : <?php /*echo getValue('datacollectionform', 'FormName', "id = $SelectedFormID"); */?>
+                            </div>-->
+                            <div class="card-title">User: <?php echo $UserData; ?></div>
                             <div class="card-subtitle"></div>
                         </div>
                         <div class="card-body">
