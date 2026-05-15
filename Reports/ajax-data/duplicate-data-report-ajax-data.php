@@ -19,7 +19,7 @@ if ($_REQUEST['targetData'] != '') {
     $targetData = $app->cleanInput($_REQUEST['targetData']);
 }
 
-$qryCreate = "EXEC find_Duplicate_Missing_HH_For_All $FormID, '$colName', $targetData";
+$qryCreate = "EXEC find_Duplicate_Missing_HH_For_All_Updated $FormID, '$colName', $targetData";
 
 
 $resQry = $app->getDBConnection()->fetchAll($qryCreate);

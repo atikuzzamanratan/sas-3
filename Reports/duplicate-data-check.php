@@ -55,7 +55,8 @@ $rsQryFormName = $app->getDBConnection()->fetchAll($qryFormName, $loggedUserComp
 
                     $FormName = getValue('datacollectionform', 'FormName', "id = $FormID");
 
-                    $dataURL = $baseURL . "Reports/ajax-data/duplicate-data-report-ajax-data.php?frmID=$FormID&colName=$columnNameToUpdateValueForListingData&targetData=$maxNumberOfHHForSampling";
+                    //$dataURL = $baseURL . "Reports/ajax-data/duplicate-data-report-ajax-data.php?frmID=$FormID&colName=$columnNameToUpdateValueForListingData&targetData=$maxNumberOfHHForSampling";
+                    $dataURL = $baseURL . "Reports/ajax-data/duplicate-data-report-ajax-data.php?frmID=$FormID&colName=$columnNameToUpdateValueForMainData&targetData=$maxNumberOfHHForSampling";
 
                     ?>
                     <section class="card">
